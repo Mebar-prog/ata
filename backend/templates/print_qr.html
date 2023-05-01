@@ -1,0 +1,20 @@
+{% extends 'admin_base.html' %}
+
+{% block main %}
+
+  <div class="grid-container">
+    {% for q in qr_codes %}
+      <div class="gallery">
+        <img src="{{ q.qr_code.url }}" style="width:150px; height:150px;" alt="QR code for asset {{ q.asset_id }}">
+        <ul>
+          <li><strong>Asset ID:</strong> {{ q.asset_id }}</li>
+          <li><strong>Name:</strong> {{ q.name }}</li>
+          <li><strong>Category:</strong> {{ q.category }}</li>
+          <li><strong>Sub Category:</strong> {{ q.sub_category }}</li>
+          <li><strong>Location:</strong> {{ q.location }}</li>
+          <li><strong>Owner:</strong> {{ q.owner }}</li>
+        </ul>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

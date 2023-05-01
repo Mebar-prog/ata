@@ -1,0 +1,87 @@
+{% extends 'home_base.html' %}
+{% block main %}
+{% load static %}
+        <!-- Start breadcumb Area -->
+        <div class="page-area">
+            <div class="breadcumb-overlay"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="breadcrumb text-center">
+                            <div class="section-headline white-headline">
+                                <h3>Asset Details</h3>
+                            </div>
+                            <ul class="breadcrumb-bg">
+                                <li class="home-bread">Home</li>
+                                <li>Asset Details</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- asset details view -->
+        <div class="contact-area page-padding text-center">
+          <div class="container">
+              <div class="row">
+                  <div class="col-md-8 col-md-offset-2">
+                      <h1>{{ asset.name }}</h1>
+                      <hr>
+                      <div class="asset-details">
+                          <p><strong>Asset ID:</strong> {{ asset.asset_id }}</p>
+                          <p><strong>Category:</strong> {{ asset.category }}</p>
+                          <p><strong>Subcategory:</strong> {{ asset.sub_category }}</p>
+                          <p><strong>Location:</strong> {{ asset.location }}</p>
+                          <p><strong>Owner:</strong> {{ asset.owner }}</p>
+                          <p><strong>Purchase date:</strong> {{ asset.purchase_date }}</p>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <hr>
+          <div class="section-headline text-center">
+            <h3>Report</h3>
+            <p>Report the asset only if the asset is found faulty or damaged</p>
+            </div>
+          <div class="contact-form">
+            <div class="row">
+              <div class="col-md-6 col-md-offset-3">
+                <form method="POST" action="{% url 'backend:save_report' %}">
+                {% csrf_token %}
+                  <div class="col-md-12 col-sm-12 col-xs-12">
+                    <input type="text" id="name" class="form-control" name="name" placeholder="Enter your name" required data-error="Please enter your name">
+                    <div class="help-block with-errors"></div>
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    <input type="email" class="email form-control" id="email" name="email" placeholder="Email" required data-error="Please enter your email">
+                    <div class="help-block with-errors"></div>
+                </div>
+
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                  <input type="text" class="email form-control" placeholder="Asset id" name="asset_id" required data-error="Please enter the scanned asset id">
+                  <div class="help-block with-errors"></div>
+              </div>
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <textarea id="message" rows="7" placeholder="Description of the scanned asset" name="description" class="form-control" required data-error="Write about the asset"></textarea>
+                    <div class="help-block with-errors"></div>
+                </div>
+                <div class="col-md-12 col-sm-12 col-xs-12 text-center">
+                    <button type="submit" id="submit" class="add-btn contact-btn">Send Report</button>
+                    <div id="msgSubmit" class="h3 text-center hidden"></div> 
+                    <div class="clearfix"></div>
+                </div> 
+                </form>
+              </div>
+            </div>
+          </div>
+          
+          
+      </div>
+    
+      
+     
+
+{% endblock %}
+
+	</body>
+</html>

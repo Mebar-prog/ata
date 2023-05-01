@@ -1,0 +1,498 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Asset Management</title>
+  
+    <!-- Tailwind is included -->
+    <link rel="stylesheet" href="{% static 'backend/css/main.css' %}">
+  
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'backend/favicon.ico' %}"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'backend/favicon.ico' %}"/>
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'backend/favicon.ico' %}"/>
+    <link rel="mask-icon" href="safari-pinned-tab.svg" color="#00b4b6"/>
+  
+    <meta name="description" content="Admin One - free Tailwind dashboard">
+  
+  
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-130795909-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-130795909-1');
+    </script>
+  
+  </head>
+<body>
+
+<div id="app">
+
+<nav id="navbar-main" class="navbar is-fixed-top">
+  <div class="navbar-brand">
+    <a class="navbar-item mobile-aside-button">
+      <span class="icon"><i class="mdi mdi-forwardburger mdi-24px"></i></span>
+    </a>
+    <div class="navbar-item">
+      <div class="control"><input placeholder="Search everywhere..." class="input"></div>
+    </div>
+  </div>
+  <div class="navbar-brand is-right">
+    <a class="navbar-item --jb-navbar-menu-toggle" data-target="navbar-menu">
+      <span class="icon"><i class="mdi mdi-dots-vertical mdi-24px"></i></span>
+    </a>
+  </div>
+  <div class="navbar-menu" id="navbar-menu">
+    <div class="navbar-end">
+     
+      <div class="navbar-item dropdown has-divider has-user-avatar">
+        <a class="navbar-link">
+          <div class="user-avatar">
+            <img src="{% static 'backend/img/admin-logo.png' %}" alt=" " class="rounded-full">
+          </div>
+          <div class="is-user-name"><span>{{ request.user.username }}</span></div>
+          <span class="icon"><i class="mdi mdi-chevron-down"></i></span>
+        </a>
+        <div class="navbar-dropdown">
+          <a href="{% url 'backend:profile' %}" class="navbar-item">
+            <span class="icon"><i class="mdi mdi-account"></i></span>
+            <span>My Profile</span>
+          </a>
+          <hr class="navbar-divider">
+          <a href="{% url 'backend:logout' %}" class="navbar-item">
+            <span class="icon"><i class="mdi mdi-logout"></i></span>
+            <span>Log Out</span>
+          </a>
+        </div>
+      </div>
+    
+      </a>
+    </div>
+  </div>
+</nav>
+
+<nav id="navbar-main" class="navbar is-fixed-top">
+  <div class="navbar-brand">
+    <a class="navbar-item mobile-aside-button">
+      <span class="icon"><i class="mdi mdi-forwardburger mdi-24px"></i></span>
+    </a>
+    <div class="navbar-item">
+      <div class="control"><input placeholder="Search everywhere..." class="input"></div>
+    </div>
+  </div>
+  <div class="navbar-brand is-right">
+    <a class="navbar-item --jb-navbar-menu-toggle" data-target="navbar-menu">
+      <span class="icon"><i class="mdi mdi-dots-vertical mdi-24px"></i></span>
+    </a>
+  </div>
+  <div class="navbar-menu" id="navbar-menu">
+    <div class="navbar-end">
+     
+      <div class="navbar-item dropdown has-divider has-user-avatar">
+        <a class="navbar-link">
+          <div class="user-avatar">
+            <img src="{% static 'backend/img/admin-logo.png' %}" alt="" class="rounded-full">
+          </div>
+          <div class="is-user-name"><span>{{ request.user.username }}</span></div>
+          <span class="icon"><i class="mdi mdi-chevron-down"></i></span>
+        </a>
+        <div class="navbar-dropdown">
+          <a href="{% url 'backend:profile' %}" class="navbar-item">
+            <span class="icon"><i class="mdi mdi-account"></i></span>
+            <span>My Profile</span>
+          </a>
+          <hr class="navbar-divider">
+          <a href="{% url 'backend:logout' %}" class="navbar-item">
+            <span class="icon"><i class="mdi mdi-logout"></i></span>
+            <span>Log Out</span>
+          </a>
+        </div>
+      </div>
+    
+      </a>
+    </div>
+  </div>
+</nav>
+
+<aside class="aside is-placed-left is-expanded">
+  <div class="aside-tools">
+    <div>
+      Admin <b class="font-black">ATA</b>
+    </div>
+  </div>
+  <div class="menu is-menu-main">
+    <p class="menu-label">General</p>
+    <ul class="menu-list">
+      <li class="--set-active-tables-html">
+        <a href="{% url 'backend:dashboard' %}">
+          <span class="icon"><i class="mdi mdi-desktop-mac"></i></span>
+          <span class="menu-item-label">Dashboard</span>
+        </a>
+      </li>
+    </ul>
+    <p class="menu-label">Asset Management</p>
+    <ul class="menu-list">
+      <li class="--set-active-tables-html">
+        <a href="{% url 'backend:manageasset' %}">
+          <span class="icon"><i class="mdi mdi-table"></i></span>
+          <span class="menu-item-label">Manage Asset</span>
+        </a>
+      </li>
+      <li class="--set-active-tables-html">
+        <a href="{% url 'backend:category' %}">
+          <span class="icon"><i class="mdi mdi-table"></i></span>
+          <span class="menu-item-label">Manage Categories</span>
+        </a>
+      </li>
+      
+      
+      <!-- <li class="--set-active-forms-html">
+        <a href="forms.html">
+          <span class="icon"><i class="mdi mdi-square-edit-outline"></i></span>
+          <span class="menu-item-label">Forms</span>
+        </a>
+      </li> -->
+      <li>
+        <a class="dropdown">
+          <span class="icon"><i class="mdi mdi-view-list"></i></span>
+          <span class="menu-item-label">Asset Categories</span>
+          <span class="icon"><i class="mdi mdi-plus"></i></span>
+        </a>
+        <ul>
+          {% for c in category %}
+          <li>
+            <a href="{% url 'backend:category_table' c.id %}">
+              <span>{{ c.category_name }}</span>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </li>
+    </ul>
+    <p class="menu-label">Asset Report Management</p>
+    <ul class="menu-list">
+      <li class="--set-active-profile-html">
+        <a href="{% url 'backend:report' %}">
+          <span class="icon"><i class="mdi mdi-alert-circle-outline"></i>
+          </span>
+          <span class="menu-item-label">View Report</span>
+        </a>
+      </li>
+      
+    </ul>
+    <p class="menu-label">User Management</p>
+    <ul class="menu-list">
+      <li class="--set-active-profile-html">
+        <a href="{% url 'backend:profile' %}">
+          <span class="icon"><i class="mdi mdi-account-circle"></i></span>
+          <span class="menu-item-label">Profile</span>
+        </a>
+      </li>
+      <li class="active">
+        {% if request.user.is_superuser %}
+        <a href="{% url 'backend:user_list' %}">
+            <span class="icon"><i class="mdi mdi-account-multiple"></i></span>
+            <span class="menu-item-label">View Users</span>
+        </a>
+    {% endif %}
+      </li>
+      
+      
+    </ul>
+  </div>
+</aside>
+
+
+<section class="is-title-bar">
+  <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+    <ul>
+      <li>Admin</li>
+      <li>View Users</li>
+    </ul>
+   
+  </div>
+</section>
+
+<section class="is-hero-bar">
+  <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+    <h1 class="title">
+      All Users
+    </h1>
+    <!-- <button class="button light">Button</button> -->
+  </div>
+</section>
+
+  <section class="section main-section">
+    <!-- <div class="notification blue">
+      <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
+        <div>
+          <span class="icon"><i class="mdi mdi-buffer"></i></span>
+          <b>Responsive table</b>
+        </div>
+        <button type="button" class="button small textual --jb-notification-dismiss">Dismiss</button>
+      </div>
+    </div> -->
+    <div class="field">
+      <div class="control">
+        <button id="add-user-button" class="button green --jb-modal" data-target="sample-modal-2" type="button">
+          Add User
+        </button>
+      </div>
+    </div>
+    <!-- Add User Modal -->
+<div id="sample-modal-2" class="modal">
+  <div class="modal-background --jb-modal-close"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Add User</p>
+    </header>
+    <form id="add-user-form" method="POST">
+      {% csrf_token %}
+      <section class="modal-card-body">
+        <div class="field">
+          <label class="label">Username</label>
+          <div class="control">
+            <input class="input" type="text" name="username" required>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Email</label>
+          <div class="control">
+            <input class="input" type="email" name="email" required>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Password</label>
+          <div class="control">
+            <input class="input" type="password" name="password" required>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Confirm Password</label>
+          <div class="control">
+            <input class="input" type="password" name="confirm_password" required>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Role</label>
+          <div class="control">
+            <select name="role">
+              <option value="admin">Admin</option>
+              <option value="staff_user">Staff User</option>
+              <option value="state_user">Estate User</option>
+            </select>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button --jb-modal-close">Cancel</button>
+        <button id="add-user-submit" class="button blue" type="submit">Add User</button>
+      </footer>
+    </form>
+  </div>
+</div>
+    
+    <!-- <div id="sample-modal-2" class="modal">
+      <div class="modal-background --jb-modal-close"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Sample modal</p>
+        </header>
+        <section class="modal-card-body">
+          <p>Lorem ipsum dolor sit amet <b>adipiscing elit</b></p>
+          <p>This is sample modal</p>
+        </section>
+        <footer class="modal-card-foot">
+          <button class="button --jb-modal-close">Cancel</button>
+          <button class="button blue --jb-modal-close">Confirm</button>
+        </footer>
+      </div>
+    </div> -->
+ 
+    
+    
+    
+    <div class="card has-table">
+      <header class="card-header">
+        <p class="card-header-title">
+          <span class="icon"><i class="mdi mdi-account-multiple"></i></span>
+          Users
+        </p>
+        <a href="#" class="card-header-icon">
+          <span class="icon"><i class="mdi mdi-reload"></i></span>
+        </a>
+      </header>
+      <div class="card-content">
+        <table>
+          <thead>
+              <tr>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>role</th>
+                  <th>Action</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for user in users %}
+              <tr>
+                  <td data-label="Name">{{ user.username }}</td>
+                  <td data-label="Company">{{ user.email }}</td>
+                  <td>
+                    {% if user.is_superuser %}
+                        admin
+                    {% elif user.is_staff %}
+                        {% if user.groups.exists %}
+                            {% for group in user.groups.all %}
+                                {% if group.name == 'state_user' %}
+                                    Estate
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            Staff
+                        {% endif %}
+                    {% else %}
+                        Unknown
+                    {% endif %}
+
+                </td>
+
+                  <td class="actions-cell">
+                      <div class="buttons middle nowrap">
+                          <button class="button small red --jb-modal" data-target="sample-modal-{{ user.id }}" type="button">
+                              <span class="icon"><i class="mdi mdi-trash-can"></i></span>
+                          </button>
+                      </div>
+                  </td>
+              </tr>
+              <div id="sample-modal-{{ user.id }}" class="modal">
+                  <div class="modal-background --jb-modal-close"></div>
+                  <div class="modal-card">
+                      <header class="modal-card-head">
+                          <p class="modal-card-title">Delete User</p>
+                      </header>
+                      <section class="modal-card-body">
+                          <p>Are you sure you want to delete user {{ user.username }}?</p>
+                      </section>
+                      <footer class="modal-card-foot">
+                          <button class="button --jb-modal-close">Cancel</button>
+                          <form action="{% url 'backend:delete_user' user.id %}" method="POST" class="delete-form">
+                              {% csrf_token %}
+                              <button type="submit" class="button red">Delete</button>
+                          </form>
+                      </footer>
+                  </div>
+              </div>
+              {% endfor %}
+          </tbody>
+      </table>
+      <div class="table-pagination">
+        <div class="flex items-center justify-between">
+          <div class="buttons">
+            {% if users.has_previous %}
+              <a href="?page=1" class="button {% if users.number == 1 %}active{% endif %}">&lt;&lt;</a>
+              <a href="?page={{ users.previous_page_number }}" class="button {% if users.number == 1 %}active{% endif %}">&lt;</a>
+            {% endif %}
+      
+            {% for i in users.paginator.page_range %}
+              {% if users.number == i %}
+                <button type="button" class="button active">{{ i }}</button>
+              {% else %}
+                <a href="?page={{ i }}" class="button">{{ i }}</a>
+              {% endif %}
+            {% endfor %}
+      
+            {% if users.has_next %}
+              <a href="?page={{ users.next_page_number }}" class="button {% if users.number == users.paginator.num_pages %}active{% endif %}">&gt;</a>
+              <a href="?page={{ users.paginator.num_pages }}" class="button {% if users.number == users.paginator.num_pages %}active{% endif %}">&gt;&gt;</a>
+            {% endif %}
+          </div>
+          <small>Page {{ users.number }} of {{ users.paginator.num_pages }}</small>
+        </div>
+      </div>
+      
+      </div>
+    </div>
+
+    <div class="card empty">
+      <div class="card-content">
+        <div>
+          <span class="icon large"><i class="mdi mdi-emoticon-sad mdi-48px"></i></span>
+        </div>
+        <p>Nothing's here…</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
+      <div class="flex items-center justify-start space-x-3">
+        <div>
+          © 2023, Asset Tagging Application
+        </div>
+  
+      </div>
+  
+  
+      
+    </div>
+  </footer>
+  
+
+</div>
+
+<!-- Scripts below are for demo only -->
+<script type="text/javascript" src="{% static 'backend/js/main.min.js' %}"></script>
+
+
+
+<script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '658339141622648');
+  fbq('track', 'PageView');
+</script>
+
+<!-- add user js -->
+<!-- Add User JavaScript -->
+<script type="text/javascript">
+  const addUserForm = document.querySelector('#add-user-form');
+  addUserForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(addUserForm);
+    const response = await fetch('{% url "backend:add_user" %}', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}'
+      }
+    });
+
+    if (response.ok) {
+      // User added successfully, reload the page or show a success message
+      location.reload();
+    } else {
+      // Display the error message returned from the server
+      const errorResponse = await response.json();
+      alert(errorResponse.error);
+    }
+  });
+</script>
+
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=658339141622648&ev=PageView&noscript=1"/></noscript>
+
+<!-- Icons below are for demo only. Feel free to use any icon pack. Docs: https://bulma.io/documentation/elements/icon/ -->
+<link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
+
+</body>
+</html>
