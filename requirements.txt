@@ -14,3 +14,4 @@ pyzbar==0.1.9
 qrcode==7.4.2
 sqlparse==0.4.3
 typing_extensions==4.5.0
+whitenoise==6.4.0
