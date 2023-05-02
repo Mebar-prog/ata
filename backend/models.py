@@ -35,7 +35,7 @@ class Asset(models.Model):
         # Create the full URL for this asset's detail page
         asset_url = f'{base_url}asset/{self.asset_id}/'
         # Encode the URL for use in a QR code
-        encoded_url = urllib.parse.quote(asset_url, safe='')
+        # encoded_url = urllib.parse.quote(asset_url, safe='')
   
         # Create the QR code object
         qr = qrcode.QRCode(

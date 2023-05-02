@@ -53,8 +53,4 @@ def forgot_password(request):
     return render(request, 'password_reset.html')
 
 from django.contrib.auth.models import User, Group
-# send OTP
-# def otp(request):
-#     otp = random.randint(11111,99999)
-#     email = request.POST.get('email')
-#     user = User.objects.filter(email=email)
+
