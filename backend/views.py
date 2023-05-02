@@ -380,7 +380,6 @@ def delete_asset(request, asset_id):
     return redirect(reverse('backend:manageasset'))
 
 # view of report of faulty asset
-@login_required
 def save_report(request):
     if request.method == 'POST':
         # Get the form data
