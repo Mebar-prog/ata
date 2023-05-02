@@ -1,37 +1,6 @@
 {% extends 'home_base.html' %}
 {% block main %}
 {% load static %}
-            <!-- header-area end -->
-            <!-- mobile-menu-area start -->
-            <div class="mobile-menu-area hidden-lg hidden-md hidden-sm">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="mobile-menu">
-                                <div class="logo">
-                                    <a href="{% url 'frontend:index' %}"><img src="{% static 'frontend/img/logo/logo.png' %}" alt="" /></a>
-                                </div>
-                                <nav id="dropdown">
-                                    <ul>
-                                        <li><a class="pages" href="{% url 'frontend:index' %}">Home</a>
-                                           
-                                        </li>
-                                        <li><a href="{% url 'frontend:about' %}">About us</a></li>
-                                       
-                                        
-                                        <li><a href="{% url 'frontend:contact' %}">contacts</a></li>
-
-                                        <li><a href="{% url 'frontend:admin_login' %}">Login</a></li>
-                                    </ul>
-                                </nav>
-                            </div>					
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- mobile-menu-area end -->	
-        </header>
-        <!-- header end -->
         <!-- Start breadcumb Area -->
         <div class="page-area">
             <div class="breadcumb-overlay"></div>
