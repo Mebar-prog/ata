@@ -44,7 +44,7 @@ class Asset(models.Model):
             border=5
         )
         # Add the encoded URL to the QR code
-        qr.add_data(encoded_url)
+        qr.add_data(asset_url)
         qr.make(fit=True)
         # Generate the QR code image
         img = qr.make_image(fill_color='black', back_color='white')
