@@ -412,7 +412,7 @@ def save_report(request):
 
         return redirect('frontend:index')
 
-    return render(request, 'frontend/details.html')
+    return render(request, 'frontend/detail.html')
 
 
 # upload asset detail in bulk
