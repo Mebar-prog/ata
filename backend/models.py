@@ -31,7 +31,7 @@ class Asset(models.Model):
 
     def generate_qr_code(self):
         # Get the base URL of your website
-        base_url = reverse('frontend:index')
+        base_url = reverse('frontend:admin_login')
         # Create the full URL for this asset's detail page
         asset_url = f'{base_url}asset/{self.asset_id}/'
         # Encode the URL for use in a QR code
