@@ -6,7 +6,6 @@ from django.core.files.base import ContentFile
 from django.urls import reverse
 import urllib.parse
 
-
 # Create your models here. 
 class AssetCategory(models.Model):
     category_name = models.CharField(max_length=100)
@@ -57,34 +56,6 @@ class Asset(models.Model):
         # Create an InMemoryUploadedFile from the ContentFile
         file_name = f"{self.asset_id}.png"
         self.qr_code.save(file_name, file)
-
-    # def generate_qr_code(self):
-    #     # Get the base URL of your website
-    #     # base_url = 'http://127.0.0.1:8000/'
-    #     base_url = reverse('frontend:index')
-    #     # Create the full URL for this asset's detail page
-    #     asset_url = f'{base_url}asset/{self.asset_id}/'
-  
-    #     # Create the QR code object
-    #     qr = qrcode.QRCode(
-    #         version=1,
-    #         box_size=10,
-    #         border=5
-    #     )
-    #     # Add the asset_id to the QR code
-    #     qr.add_data(self.asset_id)
-    #     qr.make(fit=True)
-    #     # Generate the QR code image
-    #     img = qr.make_image(fill_color='black', back_color='white')
-    #     # Create an in-memory buffer to store the image data
-    #     buffer = BytesIO()
-    #     # Save the image to the buffer in PNG format
-    #     img.save(buffer, format='PNG')
-    #     # Create a Django ContentFile from the buffer data
-    #     file = ContentFile(buffer.getvalue())
-    #     # Create an InMemoryUploadedFile from the ContentFile
-    #     file_name = f"{self.asset_id}.png"
-    #     self.qr_code.save(file_name, file)
 
     def save(self, *args, **kwargs):
         # Check if qr_code field has been set yet
