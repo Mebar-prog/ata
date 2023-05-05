@@ -400,15 +400,16 @@ def save_report(request):
             description=description,
             asset=asset
         )
-
-        # Send the email
+        
+        user_emails = list(User.objects.values_list('email', flat=True))
+        # Send email to all users in the system
         send_mail(
         'New Report Submitted',
         f'A new report has been submitted for asset id {asset_id}.\n\nName: {name}\nEmail: {email}\nDescription: {description}',
         'from@example.com',
-        [request.user.email],
+        user_emails,
         fail_silently=False,
-        )
+)
 
         return redirect('frontend:index')
 
