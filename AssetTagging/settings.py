@@ -29,7 +29,7 @@ environ.Env.read_env()
 SECRET_KEY = 'django-insecure-3(fwk@d8f2u_s+05a2f%vky=@8g$ig5(h9r%8gt%8v5nfiizz0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'widget_tweaks',
-    'cloudinary_storage'
+    'cloudinary_storage',
 
 ]
 
@@ -92,11 +92,11 @@ WSGI_APPLICATION = 'AssetTagging.wsgi.application'
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'ata',
+#         'NAME': 'AssetTaggingDB',
 #         'USER': 'postgres',
-#         'PASSWORD': 'pangbisa123',
+#         'PASSWORD': 'dechen22',
 #         'HOST': 'localhost',
-#         'PORT': '',
+#         'PORT': '5432',
 #     }
 # }
 
