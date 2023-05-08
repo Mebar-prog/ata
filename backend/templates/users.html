@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Asset Management</title>
   
-    <!-- Tailwind is included -->
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'backend/css/add.css' %}">
     <link rel="stylesheet" href="{% static 'backend/css/main.css' %}">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'backend/favicon.ico' %}"/>
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'backend/favicon.ico' %}"/>
@@ -225,15 +226,6 @@
 </section>
 
   <section class="section main-section">
-    <!-- <div class="notification blue">
-      <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
-        <div>
-          <span class="icon"><i class="mdi mdi-buffer"></i></span>
-          <b>Responsive table</b>
-        </div>
-        <button type="button" class="button small textual --jb-notification-dismiss">Dismiss</button>
-      </div>
-    </div> -->
     <div class="field">
       <div class="control">
         <button id="add-user-button" class="button green --jb-modal" data-target="adduser" type="button">
@@ -289,30 +281,16 @@
         </div>
         <div class="field is-grouped">
           <div class="control">
-            <button class="button --jb-modal-close">Cancel</button>
-            <button id="add-user-submit" class="button blue" type="submit">Add User</button>
+            <button class="button red --jb-modal-close">Cancel</button>
+            <!-- <button id="add-user-submit" class="button blue" type="submit"  onclick="openaddPopup()">Add User</button> -->
+            <button  id = "add-user-submit" type="submit" class="button blue --jb-modal-close" onclick="openaddPopup()">Add</button>
           </div>
         </div>
       </form>
     </section>
   </div>
 </div>
-    <!-- <div id="sample-modal-2" class="modal">
-      <div class="modal-background --jb-modal-close"></div>
-      <div class="modal-card">
-        <header class="modal-card-head">
-          <p class="modal-card-title">Sample modal</p>
-        </header>
-        <section class="modal-card-body">
-          <p>Lorem ipsum dolor sit amet <b>adipiscing elit</b></p>
-          <p>This is sample modal</p>
-        </section>
-        <footer class="modal-card-foot">
-          <button class="button --jb-modal-close">Cancel</button>
-          <button class="button blue --jb-modal-close">Confirm</button>
-        </footer>
-      </div>
-    </div> -->
+    
  
     <div class="card has-table">
       <header class="card-header">
@@ -414,15 +392,6 @@
       
       </div>
     </div>
-
-    <div class="card empty">
-      <div class="card-content">
-        <div>
-          <span class="icon large"><i class="mdi mdi-emoticon-sad mdi-48px"></i></span>
-        </div>
-        <p>Nothing's here…</p>
-      </div>
-    </div>
   </section>
 
   <footer class="footer">
@@ -444,9 +413,6 @@
 
 <!-- Scripts below are for demo only -->
 <script type="text/javascript" src="{% static 'backend/js/main.min.js' %}"></script>
-
-
-
 <script>
   !function(f,b,e,v,n,t,s)
   {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -486,6 +452,41 @@
     }
   });
 </script>
+
+
+
+
+
+
+  <!-- ==================popup message for adding users=======================-->
+  <div class="container">
+    <div class="add" id="addpopup">
+      <img src="{% static 'backend/img/tick.png' %}">
+      <h2>Success!</h2>
+      <p>Users has been successfully Added, Thank!</p>
+      <button type="button" onclick="closepopup()" class="ok">OK</button>  
+    </div>
+  </div>
+
+  <!--================== javascript for popup message============ -->
+  <script>
+    let add = document.getElementById("addpopup");
+    function openaddPopup(){
+      add.classList.add("open-addpopup");
+    }
+    function closepopup(){
+      add.classList.remove("open-addpopup");
+    }
+  </script>
+
+  <!-- end up the popup message -->
+
+
+
+
+
+
+
 
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=658339141622648&ev=PageView&noscript=1"/></noscript>
 

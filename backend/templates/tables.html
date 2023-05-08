@@ -9,6 +9,10 @@
   
     <!-- Tailwind is included -->
     <link rel="stylesheet" href="{% static 'backend/css/main.css' %}">
+<!-- css for pop message -->
+    <link rel="stylesheet" type="text/css" href="{% static 'backend/css/add.css' %}">
+    <!-- <link rel="stylesheet" type="text/css" href="{% static 'backend/css/style.css' %}"> -->
+    <link rel="stylesheet" type="text/css" href="{% static 'backend/css/bulk.css' %}">
   
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'backend/favicon.ico' %}"/>
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'backend/favicon.ico' %}"/>
@@ -328,7 +332,7 @@
                                 <p>Are you sure you want to delete {{ asset.name }}?</p>
                             </section>
                             <footer class="modal-card-foot">
-                                <button class="button --jb-modal-close">Cancel</button>
+                                <button class="button blue --jb-modal-close">Cancel</button>
                                 <form action="{% url 'backend:delete_asset' asset.asset_id %}" method="POST" class="delete-form">
                                     {% csrf_token %}
                                     <button type="submit" class="button red">Delete</button>
@@ -445,16 +449,6 @@
         <button type="button" class="button small textual --jb-notification-dismiss">Dismiss</button>
       </div>
     </div> -->
-
-    <div class="card empty">
-      <div class="card-content">
-        <div>
-          <span class="icon large"><i class="mdi mdi-emoticon-sad mdi-48px"></i></span>
-        </div>
-        <p>Nothing's here…</p>
-        
-      </div>
-    </div>
   </section>
 
   <footer class="footer">
@@ -527,8 +521,9 @@
         </div>
         </section>
         <footer class="modal-card-foot">
-          <button class="button --jb-modal-close">Cancel</button>
-          <button id="add-user-submit" class="button blue" type="submit">Save Changes</button>
+          <button class="button red --jb-modal-close">Cancel</button>
+          <!-- <button id="add-user-submit" class="button blue" type="submit">Save Changes</button> -->
+          <button id="add-user-submit" type="submit" class="button blue --jb-modal-close" onclick="openPopup()">Save Changes</button>
         </footer>
     </form>                      
   </div>
@@ -553,8 +548,8 @@
         </div>
       </section>
       <footer class="modal-card-foot">
-        <!-- <button class="button --jb-modal-close">Cancel</button> -->
-        <button class="button blue" type="submit">Upload</button>
+        <!-- <button class="button blue" type="submit">Upload</button> -->
+        <button type="submit" class="button blue --jb-modal-close" onclick="openbulkPopup()">Upload</button>
       </footer>
     </form>
   </div>
@@ -626,8 +621,9 @@
         </div>
     </section>
     <footer class="modal-card-foot">
-      <button class="button --jb-modal-close">Cancel</button>
-      <button id="add-user-submit" class="button blue" type="submit">Submit</button>
+      <button class="button red --jb-modal-close">Cancel</button>
+      <!-- <button id="add-user-submit" class="button blue" type="submit">Submit</button> -->
+      <button  id="add-user-submit" type="submit" class="button blue --jb-modal-close" onclick="openaddPopup()">Add</button>
     </footer>
 </form>
   </div>
@@ -684,17 +680,88 @@
         locationInput.value = assetLocation;
         ownerInput.value = assetOwner;
         purchaseDateInput.value = formattedDate; // set the value of the input field
-
-        
-
         document.querySelector('input[name="asset_id"]').value = assetId;
       });
     });
   });
 </script>
 
-<!-- delete asset script -->
 
+<!--====================== popup message for adding assets=====================-->
+<div class="container">
+  <div class="add" id="addpopup">
+    <img src="{% static 'backend/img/tick.png' %}">
+    <h2>Success!</h2>
+    <p>Asset Details has been successfully Added, Thank!</p>
+    <button type="button" onclick="closepopup()" class="ok">OK</button>  
+  </div>
+</div>
+<script>
+  let add = document.getElementById("addpopup");
+
+  function openaddPopup(){
+    add.classList.add("open-addpopup");
+  }
+
+  function closepopup(){
+    add.classList.remove("open-addpopup");
+  }
+</script>
+
+<!-- end up the popup message -->
+
+
+
+<!-- ==============================popup message for asset details edit======================== -->
+<div class="container">
+  <div class="popup" id="popup">
+    <img src="{% static 'backend/img/tick.png' %}">
+    <h2>Success!</h2>
+    <p>Asset Details has been successfully Edited, Thank!</p>
+    <button type="button" onclick="closePopup()" class="ok">OK</button>  
+  </div>
+</div>
+<script>
+  let popup = document.getElementById("popup");
+
+  function openPopup(){
+    popup.classList.add("open-popup");
+  }
+
+
+  function closePopup(){
+    popup.classList.remove("open-popup");
+  }
+</script>
+
+<!-- ========================end up the popup message========================== -->
+
+
+
+<!-- ========================popup message for adding bulk assets=============================-->
+<div class="container">
+  <div class="bulk" id="bulkpopup">
+    <img src="{% static 'backend/img/tick.png' %}">
+    <h2>Success!</h2>
+    <p>Asset Details has been successfully Uploaded in Bulk, Thank!</p>
+
+    <button type="button" onclick="closep()" class="ok">OK</button>  
+  </div>
+</div>
+<script>
+  let bulk = document.getElementById("bulkpopup");
+
+  function openbulkPopup(){
+    bulk.classList.add("open-bulkpopup");
+  }
+
+
+  function closep(){
+    bulk.classList.remove("open-bulkpopup");
+  }
+</script>
+
+  <!-- end up the popup message -->
 
 <!-- Scripts below are for demo only -->
 <script type="text/javascript" src="{% static 'backend/js/main.min.js' %}"></script>

@@ -9,6 +9,7 @@
   
     <!-- Tailwind is included -->
     <link rel="stylesheet" href="{% static 'backend/css/main.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'backend/css/add.css' %}">
   
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'backend/favicon.ico' %}"/>
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'backend/favicon.ico' %}"/>
@@ -105,16 +106,6 @@
             <span class="menu-item-label">Manage Categories</span>
           </a>
         </li>
-        
-        
-        <!-- <li class="--set-active-forms-html">
-          <a href="forms.html">
-            <span class="icon"><i class="mdi mdi-square-edit-outline"></i></span>
-            <span class="menu-item-label">Forms</span>
-          </a>
-        </li> -->
-       
-       
         <li>
           <a class="dropdown">
             <span class="icon"><i class="mdi mdi-view-list"></i></span>
@@ -186,15 +177,6 @@
 </section>
 
   <section class="section main-section">
-    <!-- <div class="notification blue">
-      <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
-        <div>
-          <span class="icon"><i class="mdi mdi-buffer"></i></span>
-          <b>Responsive table</b>
-        </div>
-        <button type="button" class="button small textual --jb-notification-dismiss">Dismiss</button>
-      </div>
-    </div> -->
     <div class="field">
       <div class="control">
         <button id="add-user-button" class="button green --jb-modal" data-target="sample-modal-2" type="button">
@@ -290,25 +272,6 @@
 {% endif %}
       </div>
     </div>
-
-    <!-- <div class="notification red">
-      <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
-        <div>
-          <span class="icon"><i class="mdi mdi-buffer"></i></span>
-          <b>Empty table.</b>
-        </div>
-        <button type="button" class="button small textual --jb-notification-dismiss">Dismiss</button>
-      </div>
-    </div> -->
-
-    <div class="card empty">
-      <div class="card-content">
-        <div>
-          <span class="icon large"><i class="mdi mdi-emoticon-sad mdi-48px"></i></span>
-        </div>
-        <p>Nothing's here…</p>
-      </div>
-    </div>
   </section>
 
   <footer class="footer">
@@ -350,7 +313,8 @@
       </section>
     <footer class="modal-card-foot">
       <button class="button --jb-modal-close">Cancel</button>
-      <button class="button green --jb-modal-close">Confirm</button>
+      <!-- <button class="button green --jb-modal-close" onclick="closePopup()">Confirm</button> -->
+      <button type="submit" class="button blue --jb-modal-close" onclick="openPopup()">Confirm</button>
     </footer>
     </form>
   </div>
@@ -375,7 +339,8 @@
       </section>
       <footer class="modal-card-foot">
         <button class="button --jb-modal-close">Cancel</button>
-        <button type="submit" class="button blue">Save</button>
+        <!-- <button type="submit" class="button blue">Save</button> -->
+        <button  type="submit" class="button blue --jb-modal-close" onclick="openaddPopup()">Save</button>
       </footer>
     </form>
   </div>
@@ -405,6 +370,54 @@
 
 
 
+  <!-- ==================popup message for adding categories=======================-->
+  <div class="container">
+    <div class="add" id="addpopup">
+      <img src="{% static 'backend/img/tick.png' %}">
+      <h2>Success!</h2>
+      <p>Category has been successfully Added, Thank!</p>
+      <button type="button" onclick="closepopup()" class="ok">OK</button>  
+    </div>
+  </div>
+
+  <!--================== javascript for popup message============ -->
+  <script>
+    let add = document.getElementById("addpopup");
+    function openaddPopup(){
+      add.classList.add("open-addpopup");
+    }
+    function closepopup(){
+      add.classList.remove("open-addpopup");
+    }
+  </script>
+
+  <!-- end up the popup message -->
+
+
+  
+<!-- ==============================popup message for edit category ======================== -->
+<div class="container">
+  <div class="popup" id="popup">
+    <img src="{% static 'backend/img/tick.png' %}">
+    <h2>Success!</h2>
+    <p>Category has been successfully Edited, Thank!</p>
+    <button type="button" onclick="closePopup()" class="ok">OK</button>  
+  </div>
+</div>
+<script>
+  let popup = document.getElementById("popup");
+
+  function openPopup(){
+    popup.classList.add("open-popup");
+  }
+
+
+  function closePopup(){
+    popup.classList.remove("open-popup");
+  }
+</script>
+
+<!-- ========================end up the popup message========================== -->
 
 <!-- Scripts below are for demo only -->
 <script type="text/javascript" src="{% static 'backend/js/main.min.js' %}"></script>
