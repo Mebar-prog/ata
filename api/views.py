@@ -18,4 +18,3 @@ class DormAmenitiesAssetUpdate(generics.UpdateAPIView):
     queryset = Asset.objects.filter(category__category_name='dorm_amenities')
     serializer_class = DormAmenitiesAssetSerializer
 
-
