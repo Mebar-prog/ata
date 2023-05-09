@@ -367,64 +367,6 @@
             </tbody>
             {% endif %}
         </table>
-        <!-- <table>
-          <thead>
-            <tr>
-              <th>sl.no</th>
-              <th>QR Code</th>
-              <th>Asset Id</th>
-              <th>Item Name</th>
-              <th>Category</th>
-              <th>Sub-Category</th>
-              <th>Location</th>
-              <th>Owner</th>
-              <th>Purchase Date</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            
-            {% for asset in assets %}
-            <tr  id="asset-{{ asset.id }}">
-              <td class="slno">{{ forloop.counter }}</td>
-              <td class="image-cell">
-                <div class="image">
-                  <img src="{{ asset.qr_code.url }}" class="rounded-full">
-                </div>
-              </td>
-              <td data-label="Asset Id">{{ asset.asset_id }}</td>
-              <td data-label="Asset Name">{{ asset.name }}</td>
-              <td data-label="Cagetory">{{ asset.category }}</td>
-              <td data-label="Sub-Category">{{ asset.sub_category }}</td>
-              <td data-label="Location">{{ asset.location }}</td>
-              <td data-label="Owner">{{ asset.owner }}</td>
-              <td data-label="Date">{{ asset.purchase_date }}</td>
-              <td class="actions-cell">
-                <div class="buttons right nowrap">
-                 
-                  <button class="button small blue" onclick="printQR('{{ asset.qr_code.url }}')" type="button">
-                    <span class="icon"><i class="mdi mdi-printer"></i></span>
-                  </button>
-                  
-                  
-                  <button class="button small green --jb-modal" data-target="sample-modal" data-asset-id="{{ asset.asset_id }}" data-asset-name="{{ asset.name }}" data-asset-category="{{ asset.category.pk }}" data-asset-sub-category="{{ asset.sub_category }}" data-asset-location="{{ asset.location }}" data-asset-owner="{{ asset.owner }}" data-asset-purchase-date="{{ asset.purchase_date }}" type="button">
-                    <span class="icon"><i class="mdi mdi-pencil"></i></span>
-                  </button>
-                 
-                  <button class="button small red --jb-modal" data-target="sample-modal-{{ asset.asset_id }}" type="button">
-                    <span class="icon"><i class="mdi mdi-trash-can"></i></span>
-                  </button>
-                  
-                   
-
-                  
-                </div>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table> -->
-        
         
         {% if assets.has_other_pages %}
   <div class="table-pagination">
@@ -659,12 +601,13 @@
 
 
 </div>
+<!-- print qr code individually -->
 <script>
   function printQR(qrCodeUrl) {
     var printWindow = window.open(qrCodeUrl);
     printWindow.print();
   }
-  </script>
+</script>
 <!-- script to pre-populate the edit details form  -->
 <script>
   document.addEventListener('DOMContentLoaded', () => {

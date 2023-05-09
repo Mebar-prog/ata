@@ -52,5 +52,4 @@ def asset_details(request, asset_id):
 def forgot_password(request):
     return render(request, 'password_reset.html')
 
-from django.contrib.auth.models import User, Group
 
