@@ -11,6 +11,7 @@ from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from datetime import datetime
 from openpyxl import load_workbook
+import os
 # import qrcode
 # from io import BytesIO
 # from django.core.files import File
@@ -435,6 +436,16 @@ def upload_excel_file(request):
             asset.owner = row[5]
             purchase_date_str = row[6]
             asset.item_creation_date = datetime.now()
+
+            # if isinstance(purchase_date_str, datetime):
+            #     purchase_date = purchase_date_str.date()
+            # else:
+            #     if isinstance(purchase_date_str, int):
+            #         purchase_date_str = str(purchase_date_str)  # Convert integer to string
+            #     purchase_date = datetime.strptime(purchase_date_str, '%m/%d/%y').date()
+            # asset.purchase_date = purchase_date
+            # asset.save()
+
             if isinstance(purchase_date_str, datetime): # check if the variable is already in datetime format
                 purchase_date = purchase_date_str.date()
             else:
@@ -468,7 +479,11 @@ def export_to_excel(request):
             cell.value = cell_value
     
     # Save the Excel file and return it as a FileResponse to the user's browser for download
-    response = FileResponse(open("assets.xlsx", "rb"), as_attachment=True, filename="assets.xlsx")
+    # response = FileResponse(open("assets.xlsx", "rb"), as_attachment=True, filename="assets.xlsx")
+
+    # Get the absolute file path to "assets.xlsx" in the root directory
+    file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets.xlsx'))
+    response = FileResponse(open(file_path, "rb"), as_attachment=True, filename="assets.xlsx")
     return response
 
 
