@@ -1,4 +1,5 @@
 {% load static %}
+
 <!doctype html>
 <html class="no-js" lang="en">
 	
@@ -26,10 +27,20 @@
         <link rel="stylesheet" href="{% static 'frontend/css/meanmenu.min.css' %}">
 		<!-- font-awesome css -->
 		<link rel="stylesheet" href="{% static 'frontend/css/font-awesome.min.css' %}">
-        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
+        <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+        <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+        <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+            <!-- One file includes all the Font Awesome Free icons and utilities -->
+        <link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
+            
+        <!-- One file includes all the Font Awesome Free icons and utilities -->
+        <link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
 
-
+        <!-- One file includes all the Font Awesome Free icons and utilities -->
+        <script src="{% static 'fontawesomefree/js/all.min.js' %}"></script>
+  
 		<link rel="stylesheet" href="{% static 'frontend/css/themify-icons.css' %}">
 		<link rel="stylesheet" href="{% static 'frontend/css/flaticon.css' %}">
 		<!-- magnific css -->
@@ -45,36 +56,10 @@
 	</head>
 		<body>
 
-		<!--[if lt IE 8]>
-			<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-		<![endif]-->
+		
 
         <div id="preloader"></div>
         <header class="header-one">
-            <!-- Start top bar -->
-            <!-- <div class="topbar-area fix hidden-xs">
-                <div class="container">
-                    <div class="row">
-                       <div class="col-md-6 col-sm-6">
-                           <div class="topbar-left">
-                                <ul>
-                                    <li><a href="#"><i class="fa fa-envelope"></i> gcit.edu.bt</a></li>
-                                    <li><a href="#"><i class="fa fa-phone"></i> +975-17407445</a></li>
-                                </ul>
-							</div>
-                        </div>
-                        <div class=" col-md-6 col-sm-6">
-                            <div class="topbar-right">
-                                <div class="top-social">
-                                    <ul>
-                                    </ul> 
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
-            <!-- End top bar -->
             <!-- header-area start -->
             <div id="sticker" class="header-area header-area-2 hidden-xs">
                 <div class="container">
@@ -87,19 +72,16 @@
                                         <!-- Brand -->
                                         <!-- first landing page logo -->
                                         <a class="navbar-brand page-scroll white-logo" href="{% url 'frontend:index' %}">
-                                            <img src="{% static 'frontend/img/logo/logo.png' %}" alt=""> 
+                                            <img src="{% static 'frontend/img/logo/logo.png' %}" alt="" height="50px" width="50px"> 
                                         </a>
                                         <!-- after landing page logo -->
                                         <a class="navbar-brand page-scroll black-logo" href="{% url 'frontend:index' %}">
-                                            <img src="{% static 'frontend/img/logo/logo.png' %}" alt="">
+                                            <img src="{% static 'frontend/img/logo/logo.png' %}" alt=""  height="30px" width="50px">
                                         </a>
                                     </div>
                                     <!-- logo end -->
                                 </div>
                                 <div class="col-md-9 col-sm-9">
-                                    <!-- <div class="header-right-link">
-                                        <a class="s-menu" href="{% url 'frontend:admin_login' %}">Login</a>
-                                    </div> -->
                                     <!-- mainmenu start -->
                                     <nav class="navbar navbar-default">
                                         <div class="collapse navbar-collapse" id="navbar-example">
@@ -131,7 +113,7 @@
                         <div class="col-md-12">
                             <div class="mobile-menu">
                                 <div class="logo">
-                                    <a href="{% url 'frontend:index' %}"><img src="{% static 'frontend/img/logo/logo.png' %}" alt="" /></a>
+                                    <a href="{% url 'frontend:index' %}"><img src="{% static 'frontend/img/logo/logo.png' %}" alt=""  height="30px" width="50px"/></a>
                                 </div>
                                 <nav id="dropdown">
                                     <ul>
@@ -142,8 +124,6 @@
                                        
                                         
                                         <li><a href="{% url 'frontend:contact' %}">contacts</a></li>
-
-                                        <!-- <li><a href="{% url 'frontend:admin_login' %}">Login</a></li> -->
                                     </ul>
                                 </nav>
                             </div>					
@@ -165,10 +145,10 @@
                             <div class="footer-content logo-footer">
                                 <div class="footer-head">
                                     <div class="footer-logo">
-                                    	<a class="footer-black-logo" href="#"><img src="{% static 'frontend/img/logo/logo.png' %}" alt=""></a>
+                                    	<a class="footer-black-logo" href="#"><img src="{% static 'frontend/img/logo/logo.png' %}" alt=""  height="30px" width="50px"></a>
                                     </div>
                                     <p>
-                                        Our QR code-based asset management website, where we provide innovative solutions for managing your assets efficiently. Our easy-to-use platform allows you to scan and track your assets using QR code.
+                                        QR code-based asset management website, where it provides innovative solutions for managing assets efficiently. It is an easy platform that allows users to scan and track the details of an assets using a QR code.
                                     </p>
                                    
                                 </div>
@@ -201,13 +181,13 @@
                                         <ul>
                                             <li>
                                                 <a href="#">
-                                                    <i class="fa fa-facebook"></i>
+                                                    <i class="fa-brands fa-facebook"></i>
                                                 </a>
                                             </li>
 
                                             <li>
                                                 <a href="#">
-                                                    <i class="fa fa-instagram"></i>
+                                                    <i class="fa-brands fa-instagram"></i>
                                                 </a>
                                             </li>
                                         </ul>
