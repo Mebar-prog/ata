@@ -479,12 +479,13 @@ def export_to_excel(request):
             cell.value = cell_value
     
     # Save the Excel file and return it as a FileResponse to the user's browser for download
-    # response = FileResponse(open("assets.xlsx", "rb"), as_attachment=True, filename="assets.xlsx")
+    response = FileResponse(open("assets.xlsx", "rb"), as_attachment=True, filename="assets.xlsx")
+    return response
 
     # Get the absolute file path to "assets.xlsx" in the root directory
-    file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets.xlsx'))
-    response = FileResponse(open(file_path, "rb"), as_attachment=True, filename="assets.xlsx")
-    return response
+    # file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets.xlsx'))
+    # response = FileResponse(open(file_path, "rb"), as_attachment=True, filename="assets.xlsx")
+    # return response
     
 
 # print qr code in bulk
