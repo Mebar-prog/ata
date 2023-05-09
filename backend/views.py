@@ -485,7 +485,7 @@ def export_to_excel(request):
     file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets.xlsx'))
     response = FileResponse(open(file_path, "rb"), as_attachment=True, filename="assets.xlsx")
     return response
-
+    
 
 # print qr code in bulk
 @login_required
