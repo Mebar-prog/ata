@@ -7,13 +7,7 @@ import random
 
 # Create your views here.
 def index(request):
-    return render(request, 'index-3.html')
-
-def about(request):
-    return render(request, 'about.html')
-
-def contact(request):
-    return render(request, 'contact.html')
+    return render(request, 'report_success.html')
 
 
 def report_error(request):

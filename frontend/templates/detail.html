@@ -52,15 +52,14 @@
                     <input type="text" id="name" class="form-control" name="name" placeholder="Enter your name" required data-error="Please enter your name">
                     <div class="help-block with-errors"></div>
                 </div>
-                <div class="col-md-6 col-sm-6 col-xs-12">
+                <div class="col-md-12 col-sm-12 col-xs-12">
                     <input type="email" class="email form-control" id="email" name="email" placeholder="Email" required data-error="Please enter your email">
                     <div class="help-block with-errors"></div>
                 </div>
 
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                  <input type="text" class="email form-control" placeholder="Asset id" name="asset_id" required data-error="Please enter the scanned asset id">
-                  <div class="help-block with-errors"></div>
-              </div>
+                <input type="hidden" name="asset_id" value="{{ asset.asset_id }}">
+                
+            
                 <div class="col-md-12 col-sm-12 col-xs-12">
                     <textarea id="message" rows="7" placeholder="Description of the scanned asset" name="description" class="form-control" required data-error="Write about the asset"></textarea>
                     <div class="help-block with-errors"></div>

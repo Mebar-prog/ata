@@ -506,10 +506,7 @@ div#preloader {
 /*----------------------------------------*/
 /*  2.3. Mobile Menu Area
 /*----------------------------------------*/
-.mobile-menu-area {
-    background: #fdfcfc none repeat scroll 0 0;
-    padding: 10px 0px ;
-}
+
 .mean-container .mean-bar::after {
     content: "";
     font-size: 21px;
@@ -552,6 +549,32 @@ div#preloader {
 .mean-container .mean-nav ul li {
     width: 99.7%;
 }
+
+.mobile-menu-area {
+    background: #fdfcfc none repeat scroll 0 0;
+    padding: 35px 0px;
+  }
+  
+  /* Logo */
+  .mobile-menu-area .logo {
+    text-align: center;
+  }
+  
+  .mobile-menu-area .logo img {
+    max-width: 100%;
+    height: auto;
+    margin-left: 40px;
+    
+  }
+  
+  /* Adjust the logo size for mobile view */
+  @media (max-width: 767px) {
+    .mobile-menu-area .logo img {
+      max-width: 70px; /* Adjust the logo width as per your preference */
+    }
+  }
+  
+
 /*----------------------------------------*/
 /*  3. Intro Area
 /*----------------------------------------*/
@@ -1463,6 +1486,7 @@ span.users {
     z-index: 1;
     position: relative;
     overflow: hidden;
+    
 }
 .footer1::after {
     background: rgba(255,255,255,0.98) none repeat scroll 0 0;
@@ -1475,7 +1499,7 @@ span.users {
     z-index: -1;
 }
 .footer-area {
-    padding: 100px 0px;
+    padding: 120px 0px;
 }
 .footer-content{
     overflow: hidden;
@@ -1611,6 +1635,8 @@ span.users {
 .footer-area-bottom {
     padding: 25px 0;
     background: #f4f4f4;
+    margin-top: auto;
+
 }
 .copyright-text a:hover{
 	text-decoration: underline;
