@@ -250,7 +250,8 @@
     <header class="modal-card-head">
       <p class="modal-card-title">Add User</p>
     </header>
-    <form id="add-user-form" method="POST">
+    <!-- id="add-user-form" -->
+    <form  method="POST" action="{% url 'backend:add_user' %}">
       {% csrf_token %}
       <section class="modal-card-body">
         <div class="field">
