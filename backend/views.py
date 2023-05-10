@@ -435,10 +435,18 @@ def upload_excel_file(request):
             asset.owner = row[5]
             purchase_date_str = row[6]
             asset.item_creation_date = datetime.now()
-            if isinstance(purchase_date_str, datetime): # check if the variable is already in datetime format
+            # if isinstance(purchase_date_str, datetime): # check if the variable is already in datetime format
+            #     purchase_date = purchase_date_str.date()
+            # else:
+            #     purchase_date = datetime.strptime(purchase_date_str, '%m/%d/%y').date() # format the date string to the expected format
+            # asset.purchase_date = purchase_date
+            # asset.save()
+            if isinstance(purchase_date_str, datetime):
                 purchase_date = purchase_date_str.date()
             else:
-                purchase_date = datetime.strptime(purchase_date_str, '%m/%d/%y').date() # format the date string to the expected format
+                if isinstance(purchase_date_str, int):
+                    purchase_date_str = str(purchase_date_str)  
+                purchase_date = datetime.strptime(purchase_date_str, '%m/%d/%y').date()
             asset.purchase_date = purchase_date
             asset.save()
 
