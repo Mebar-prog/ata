@@ -289,15 +289,15 @@ def add_user(request):
         password = request.POST.get('password')
         confirm_password = request.POST.get('confirm_password')
         role = request.POST.get('role')
-        
+
         # validate form data
         if password != confirm_password:
             messages.error(request, 'Passwords do not match')
             return redirect('add_user')
-        
+
         # create new user
         new_user = User.objects.create_user(username=username, email=email, password=password)
-        
+
         # add role to new user
         if role == 'admin':
             new_user.is_superuser = True
@@ -307,19 +307,18 @@ def add_user(request):
             new_user.is_staff = True
             new_user.save()
         elif role == 'state_user':
-            group = Group.objects.get(name='state_user')
+            # Create the "state_user" group if it doesn't exist
+            group, created = Group.objects.get_or_create(name='state_user')
             new_user.groups.add(group)
             new_user.is_staff = True
             new_user.save()
-
-            
         else:
             messages.error(request, 'Invalid role')
             return redirect(reverse('backend:user_list'))
-        
+
         messages.success(request, 'User created successfully')
         return redirect(reverse('backend:user_list'))
-    
+
     return render(request, 'users.html')
 
 
