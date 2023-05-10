@@ -35,6 +35,10 @@
 		<!-- responsive css -->
 		<link rel="stylesheet" href="{% static 'frontend/css/responsive.css' %}">
 
+        <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+        <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+        <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+
 		<!-- modernizr css -->
 		<script src="{% static 'frontend/js/vendor/modernizr-2.8.3.min.js' %}"></script>
         <!-- icons -->
@@ -47,16 +51,16 @@
 
         <div id="preloader"></div>
         <header class="header-one">
-            <!-- Start top bar -->
+           
             <div class="topbar-area fix hidden-xs">
                 <div class="container">
                     <div class="row">
                        <div class="col-md-6 col-sm-6">
                            <div class="topbar-left">
-                                <ul>
+                                <!-- <ul>
                                     <li><a href="#"><i class="fa fa-envelope"></i> gcit.edu.bt</a></li>
                                     <li><a href="#"><i class="fa fa-phone"></i> +975-17407445</a></li>
-                                </ul>
+                                </ul> -->
 							</div>
                         </div>
                         <div class=" col-md-6 col-sm-6">
@@ -64,8 +68,6 @@
                                 <div class="top-social">
                                     <ul>
 
-                                        <!-- <li><a href="#"><i class="fa fa-instagram"></i></a></li>
-                                        <li><a href="#"><i class="fa fa-facebook"></i></a></li> -->
                                     </ul> 
                                 </div>
                             </div>
@@ -200,13 +202,13 @@
                                         <ul>
                                             <li>
                                                 <a href="#">
-                                                    <i class="fa fa-facebook"></i>
+                                                    <i class="fa-brands fa-facebook"></i>
                                                 </a>
                                             </li>
 
                                             <li>
                                                 <a href="#">
-                                                    <i class="fa fa-instagram"></i>
+                                                    <i class="fa-brands fa-square-instagram"></i>
                                                 </a>
                                             </li>
                                         </ul>
@@ -257,4 +259,5 @@
 		<!-- main js -->
 		<script src="{% static 'frontend/js/main.js' %}"></script>
 </body>
+
 </html>
