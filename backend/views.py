@@ -11,6 +11,11 @@ from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from datetime import datetime
 from openpyxl import load_workbook
+from openpyxl import Workbook
+from django.http import HttpResponse
+from django.conf import settings
+import os
+
 # import qrcode
 # from io import BytesIO
 # from django.core.files import File
@@ -447,6 +452,7 @@ def upload_excel_file(request):
 
     return render(request, 'tables.html')
 
+
 # export asset details in excel format
 @login_required
 def export_to_excel(request):
@@ -456,20 +462,29 @@ def export_to_excel(request):
     
     # Write the headers for the Excel file
     headers = ['Asset ID', 'Name', 'Category', 'Sub Category', 'Location', 'Owner', 'Purchase Date']
-    for col_num, header in enumerate(headers, 1):
-        cell = ws.cell(row=1, column=col_num)
-        cell.value = header
+    ws.append(headers)
     
     # Write the asset data to the Excel file
-    assets = Asset.objects.all().values_list('asset_id', 'name', 'category__category_name', 'sub_category', 'location', 'owner', 'purchase_date')
-    for row_num, row in enumerate(assets, 2):
-        for col_num, cell_value in enumerate(row, 1):
-            cell = ws.cell(row=row_num, column=col_num)
-            cell.value = cell_value
+    assets = Asset.objects.all().values_list(
+        'asset_id', 'name', 'category__category_name', 'sub_category', 'location', 'owner', 'purchase_date'
+    )
+    for asset in assets:
+        ws.append(asset)
     
-    # Save the Excel file and return it as a FileResponse to the user's browser for download
-    response = FileResponse(open("assets.xlsx", "rb"), as_attachment=True, filename="assets.xlsx")
-    return response
+    # Save the Excel file to a specific location
+    file_path = os.path.join(settings.BASE_DIR, 'assets.xlsx')
+    wb.save(file_path)
+    
+    # Check if the file exists
+    if os.path.exists(file_path):
+        # Open the saved file for reading
+        with open(file_path, 'rb') as file:
+            response = HttpResponse(file.read(), content_type='application/vnd.ms-excel')
+            response['Content-Disposition'] = 'attachment; filename=assets.xlsx'
+        return response
+    else:
+        return HttpResponse("File not found.")
+
 
 
 # print qr code in bulk
