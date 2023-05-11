@@ -97,6 +97,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'AssetTagging.wsgi.application'
 
+# session expiration time
+SESSION_COOKIE_AGE = 3600  # 1 hour in seconds
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
