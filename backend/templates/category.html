@@ -186,6 +186,24 @@
 </section>
 
   <section class="section main-section">
+    {% if messages %}
+    <div class="notification blue">
+        <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
+            <div>
+                <span class="icon"><i class="mdi mdi-buffer"></i></span>
+                <b>Notification</b>
+            </div>
+            <button type="button" class="button small textual --jb-notification-dismiss">Dismiss</button>
+        </div>
+        <div>
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
+
     <!-- <div class="notification blue">
       <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
         <div>
@@ -291,15 +309,7 @@
       </div>
     </div>
 
-    <!-- <div class="notification red">
-      <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
-        <div>
-          <span class="icon"><i class="mdi mdi-buffer"></i></span>
-          <b>Empty table.</b>
-        </div>
-        <button type="button" class="button small textual --jb-notification-dismiss">Dismiss</button>
-      </div>
-    </div> -->
+
 
     <div class="card empty">
       <div class="card-content">
@@ -349,8 +359,8 @@
         </div>
       </section>
     <footer class="modal-card-foot">
-      <button class="button --jb-modal-close">Cancel</button>
-      <button class="button green --jb-modal-close">Confirm</button>
+      <!-- <button class="button --jb-modal-close">Cancel</button> -->
+      <button class="button blue --jb-modal-close">Confirm</button>
     </footer>
     </form>
   </div>

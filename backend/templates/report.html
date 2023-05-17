@@ -183,6 +183,24 @@
 </section>
 
   <section class="section main-section">
+    {% if messages %}
+    <div class="notification blue">
+        <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
+            <div>
+                <span class="icon"><i class="mdi mdi-buffer"></i></span>
+                <b>Notification</b>
+            </div>
+            <button type="button" class="button small textual --jb-notification-dismiss">Dismiss</button>
+        </div>
+        <div>
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
+
     <!-- <div class="notification blue">
       <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
         <div>
@@ -227,7 +245,7 @@
           <tbody>
             {% for report in reports %}
             <tr>
-              <td class="slno">{{ forloop.counter }}</td>
+              <td class="slno">{{ forloop.counter0|add:reports.start_index }}</td>
               <td data-label="Cagetory">{{ report.asset.asset_id }}</td>
               <td data-label="Sender">{{ report.name }}</td>
               <td data-label="Email">{{ report.email }}</td>
@@ -243,12 +261,13 @@
                   <button class="button small red --jb-modal" data-target="sample-modal-del-{{ report.asset.asset_id }}" type="button">
                     <span class="icon"><i class="mdi mdi-trash-can"></i></span>
                   </button>
+
                   <!-- del modal -->
                   <div id="sample-modal-del-{{ report.asset.asset_id }}" class="modal">
                     <div class="modal-background --jb-modal-close"></div>
                     <div class="modal-card">
                         <header class="modal-card-head">
-                            <p class="modal-card-title">Delete Category</p>
+                            <p class="modal-card-title">Delete Report</p>
                         </header>
                         <section class="modal-card-body">
                             <p>Are you sure you want to delete report send by {{ report.name }}?</p>
@@ -262,7 +281,9 @@
                         </footer>
                     </div>
                 </div>
+                
                 <!-- end of del modal -->
+
                 </div>
               </td>
             </tr>
@@ -278,36 +299,32 @@
                 <a href="?page=1" class="button {% if reports.number == 1 %}active{% endif %}">&lt;&lt;</a>
                 <a href="?page={{ reports.previous_page_number }}" class="button {% if reports.number == 1 %}active{% endif %}">&lt;</a>
               {% endif %}
-          
-              {% for i in reports.paginator.page_range %}
+              {% for i in page_range %}
                 {% if reports.number == i %}
                   <button type="button" class="button active">{{ i }}</button>
                 {% else %}
                   <a href="?page={{ i }}" class="button">{{ i }}</a>
                 {% endif %}
               {% endfor %}
-          
               {% if reports.has_next %}
-                <a href="?page={{ reports.next_page_number }}" class="button {% if reports.number == reports.paginator.num_pages %}active{% endif %}">&gt;</a>
-                <a href="?page={{ reports.paginator.num_pages }}" class="button {% if reports.number == reports.paginator.num_pages %}active{% endif %}">&gt;&gt;</a>
+                {% if reports.number <= reports.paginator.num_pages|add:"-4" %}
+                  <a href="?page={{ reports.next_page_number }}" class="button">&gt;</a>
+                  <a href="?page={{ reports.paginator.num_pages }}" class="button">&gt;&gt;</a>
+                {% else %}
+                  <a href="?page={{ reports.next_page_number }}" class="button {% if reports.number == reports.paginator.num_pages %}active{% endif %}">&gt;</a>
+                  <a href="?page={{ reports.paginator.num_pages }}" class="button {% if reports.number == reports.paginator.num_pages %}active{% endif %}">&gt;&gt;</a>
+                {% endif %}
               {% endif %}
             </div>
             <small>Page {{ reports.number }} of {{ reports.paginator.num_pages }}</small>
           </div>
         </div>
       {% endif %}
+      
+      
       </div>
     </div>
 
-    <!-- <div class="notification red">
-      <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
-        <div>
-          <span class="icon"><i class="mdi mdi-buffer"></i></span>
-          <b>Empty table.</b>
-        </div>
-        <button type="button" class="button small textual --jb-notification-dismiss">Dismiss</button>
-      </div>
-    </div> -->
 
     <div class="card empty">
       <div class="card-content">
@@ -358,31 +375,17 @@
          
       </section>
       <footer class="modal-card-foot">
-        <button class="button --jb-modal-close">Cancel</button>
-        <button class="button green --jb-modal-close">Confirm</button>
+        <button id="add-user-submit" class="button blue" type="submit">Submit</button>
       </footer>
     </form>
   </div>
 </div>
 
-<div id="sample-modal-2" class="modal">
-  <div class="modal-background --jb-modal-close"></div>
-  <div class="modal-card">
-    <header class="modal-card-head">
-      <p class="modal-card-title">Sample modal</p>
-    </header>
-    <section class="modal-card-body">
-      <p>Lorem ipsum dolor sit amet <b>adipiscing elit</b></p>
-      <p>This is sample modal</p>
-    </section>
-    <footer class="modal-card-foot">
-      <button class="button --jb-modal-close">Cancel</button>
-      <button class="button blue --jb-modal-close">Confirm</button>
-    </footer>
-  </div>
-</div>
 
 </div>
+
+
+
 
 <!-- add/edit remark script -->
 <script>

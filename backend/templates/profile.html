@@ -177,6 +177,22 @@
 </section>
 
   <section class="section main-section">
+    {% if messages %}
+            <div class="notification blue">
+                <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
+                    <div>
+                        <span class="icon"><i class="mdi mdi-buffer"></i></span>
+                        <b>Notification</b>
+                    </div>
+                    <button type="button" class="button small textual --jb-notification-dismiss">Dismiss</button>
+                </div>
+                <div>
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2 mb-6">
       <div class="card">
         <header class="card-header">
@@ -275,6 +291,10 @@
                   <input type="password" autocomplete="new-password" name="new_password1" class="input" required>
               </div>
               <p class="help">Required. New password</p>
+              <p class="help">Your password can’t be too similar to your other personal information.</p>
+              <p class="help"> Your password must contain at least 8 characters.</p>
+              <p class="help">Your password can’t be a commonly used password.</p>
+              <p class="help">Your password can’t be entirely numeric.</p>
           </div>
           <div class="field">
               <label class="label">Confirm password</label>

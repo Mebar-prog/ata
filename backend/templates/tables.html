@@ -37,9 +37,7 @@
       <a class="navbar-item mobile-aside-button">
         <span class="icon"><i class="mdi mdi-forwardburger mdi-24px"></i></span>
       </a>
-      <!-- <div class="navbar-item">
-        <div class="control"><input placeholder="Search everywhere..." class="input"></div>
-      </div> -->
+      
       <div class="navbar-item">
         <form method="GET">
           <div class="navbar-item">
@@ -196,6 +194,23 @@
 </section>
 
   <section class="section main-section">
+    {% if messages %}
+    <div class="notification blue">
+        <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
+            <div>
+                <span class="icon"><i class="mdi mdi-buffer"></i></span>
+                <b>Notification</b>
+            </div>
+            <button type="button" class="button small textual --jb-notification-dismiss">Dismiss</button>
+        </div>
+        <div>
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
     <!-- <div class="notification blue">
       <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
         <div>
@@ -310,7 +325,7 @@
             <tbody> -->
               {% for asset in assets %}
               <tr  id="asset-{{ asset.id }}">
-                <td class="slno">{{ forloop.counter }}</td>
+                <td class="slno">{{ forloop.counter0|add:assets.start_index }}</td>
                 <td class="image-cell">
                   <div class="image">
                     <img src="{{ asset.qr_code.url }}" class="rounded-full">
@@ -369,31 +384,36 @@
         </table>
         
         {% if assets.has_other_pages %}
-  <div class="table-pagination">
-    <div class="flex items-center justify-between">
-      <div class="buttons">
-        {% if assets.has_previous %}
-          <a href="?page=1" class="button {% if assets.number == 1 %}active{% endif %}">&lt;&lt;</a>
-          <a href="?page={{ assets.previous_page_number }}" class="button {% if assets.number == 1 %}active{% endif %}">&lt;</a>
-        {% endif %}
+        <div class="table-pagination">
+          <div class="flex items-center justify-between">
+            <div class="buttons">
+              {% if assets.has_previous %}
+                <a href="?page=1" class="button {% if assets.number == 1 %}active{% endif %}">&lt;&lt;</a>
+                <a href="?page={{ assets.previous_page_number }}" class="button {% if assets.number == 1 %}active{% endif %}">&lt;</a>
+              {% endif %}
+              {% for i in page_range %}
+                {% if assets.number == i %}
+                  <button type="button" class="button active">{{ i }}</button>
+                {% else %}
+                  <a href="?page={{ i }}" class="button">{{ i }}</a>
+                {% endif %}
+              {% endfor %}
+      
+              {% if assets.has_next %}
+                {% if assets.number <= assets.paginator.num_pages|add:"-4" %}
+                  <a href="?page={{ assets.next_page_number }}" class="button">&gt;</a>
+                  <a href="?page={{ assets.paginator.num_pages }}" class="button">&gt;&gt;</a>
+                {% else %}
+                  <a href="?page={{ assets.next_page_number }}" class="button {% if assets.number == assets.paginator.num_pages %}active{% endif %}">&gt;</a>
+                  <a href="?page={{ assets.paginator.num_pages }}" class="button {% if assets.number == assets.paginator.num_pages %}active{% endif %}">&gt;&gt;</a>
+                {% endif %}
+              {% endif %}
+            </div>
+            <small>Page {{ assets.number }} of {{ assets.paginator.num_pages }}</small>
+          </div>
+        </div>
+      {% endif %}
     
-        {% for i in assets.paginator.page_range %}
-          {% if assets.number == i %}
-            <button type="button" class="button active">{{ i }}</button>
-          {% else %}
-            <a href="?page={{ i }}" class="button">{{ i }}</a>
-          {% endif %}
-        {% endfor %}
-    
-        {% if assets.has_next %}
-          <a href="?page={{ assets.next_page_number }}" class="button {% if assets.number == assets.paginator.num_pages %}active{% endif %}">&gt;</a>
-          <a href="?page={{ assets.paginator.num_pages }}" class="button {% if assets.number == assets.paginator.num_pages %}active{% endif %}">&gt;&gt;</a>
-        {% endif %}
-      </div>
-      <small>Page {{ assets.number }} of {{ assets.paginator.num_pages }}</small>
-    </div>
-  </div>
-{% endif %}
 
       </div>
     </div>
@@ -490,7 +510,7 @@
         </div>
         </section>
         <footer class="modal-card-foot">
-          <button class="button --jb-modal-close">Cancel</button>
+          <!-- <button class="button --jb-modal-close">Cancel</button> -->
           <button id="add-user-submit" class="button blue" type="submit">Save Changes</button>
         </footer>
     </form>                      

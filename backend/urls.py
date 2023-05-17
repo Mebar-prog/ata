@@ -36,7 +36,7 @@ urlpatterns = [
     path('delete_category/<int:id>/',delete_category, name='delete_category'),
     path('edit_category/',edit_category, name='edit_category'),
     path('print_qr/', print_qr, name='print_qr'),
-    path('asset_list/', asset_list, name='asset_list'),
+    # path('asset_list/', asset_list, name='asset_list'),
 
     
 ]

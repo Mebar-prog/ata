@@ -15,9 +15,6 @@ import os
 from openpyxl import Workbook
 from django.http import HttpResponse
 from django.conf import settings
-# import qrcode
-# from io import BytesIO
-# from django.core.files import File
 from django.http import FileResponse
 from openpyxl import Workbook
 
@@ -40,11 +37,18 @@ def dashboard(request):
      }
     return render(request, 'index.html',context)
 
+from django.db.models import Q
 
 @login_required
 def manageasset(request):
+    search_term = request.GET.get('search_term')
     assets = Asset.objects.order_by('-item_creation_date')
-    paginator = Paginator(assets, 10 ) # Show 5 assets per page
+
+    if search_term:
+        assets = assets.filter(Q(asset_id__icontains=search_term))
+        
+
+    paginator = Paginator(assets, 10)  # Show 5 assets per page
 
     page = request.GET.get('page')
     try:
@@ -56,24 +60,27 @@ def manageasset(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
         assets = paginator.page(paginator.num_pages)
 
+    # Calculate the range of pages to display
+    num_pages = paginator.num_pages
+    current_page = assets.number
+
+    if num_pages <= 5:
+        page_range = range(1, num_pages + 1)
+    elif current_page <= 3:
+        page_range = range(1, 6)
+    elif current_page >= num_pages - 2:
+        page_range = range(num_pages - 4, num_pages + 1)
+    else:
+        page_range = range(current_page - 2, current_page + 3)
+
     context = {
         'assets': assets,
-        'category': AssetCategory.objects.all()
+        'category': AssetCategory.objects.all(),
+        'page_range': page_range,
+        'search_term': search_term,
     }
 
     return render(request, 'tables.html', context)
-
-# search in tables.html
-@login_required
-def asset_list(request):
-  search_term = request.GET.get('search_term')
-  if search_term:
-    assets = Asset.objects.filter(asset_id=search_term)
-  else:
-    assets = Asset.objects.all()
-  context = {'assets': assets}
-  return render(request, 'tables.html', context)
-
 
 
 # category view with pagination
@@ -81,7 +88,7 @@ def asset_list(request):
 def category(request):
     category = AssetCategory.objects.all()
     categories_list = AssetCategory.objects.order_by('-item_creation_date')
-    paginator = Paginator(categories_list, 3) # Show 10 categories per page
+    paginator = Paginator(categories_list, 10) # Show 10 categories per page
 
     page = request.GET.get('page')
     try:
@@ -106,15 +113,20 @@ def add_category(request):
     if request.method == 'POST':
         category_name = request.POST.get('category_name')
         category = AssetCategory.objects.create(category_name=category_name)
+
+        messages.success(request, 'Category added successfully')
         return redirect('backend:category')
     else:
         return render(request, 'category.html')
 
+
 #delete category
 @login_required
-def delete_category(request,id):
+def delete_category(request, id):
     c = get_object_or_404(AssetCategory, id=id)
     c.delete()
+
+    messages.success(request, 'Category deleted successfully')
     return redirect(reverse('backend:category'))
 
 # edit category
@@ -125,6 +137,8 @@ def edit_category(request):
         cat = get_object_or_404(AssetCategory, id=c_id)
         cat.category_name = request.POST['category_name']
         cat.save()
+
+        messages.success(request, 'Category updated successfully')
         return redirect('backend:category')
 
     return render(request, 'category.html')
@@ -139,13 +153,37 @@ def category_table(request, category_id):
     search_term = request.GET.get('search_term')
     if search_term:
         asset_list = asset_list.filter(asset_id__icontains=search_term.lower())
+        
 
-    paginator = Paginator(asset_list, 10) # Show 10 assets per page
+    paginator = Paginator(asset_list, 10)  # Show 10 assets per page
     page = request.GET.get('page')
     assets = paginator.get_page(page)
+
+    # Calculate the range of pages to display
+    num_pages = paginator.num_pages
+    current_page = assets.number
+
+    if num_pages <= 5:
+        page_range = range(1, num_pages + 1)
+    elif current_page <= 3:
+        page_range = range(1, 6)
+    elif current_page >= num_pages - 2:
+        page_range = range(num_pages - 4, num_pages + 1)
+    else:
+        page_range = range(current_page - 2, current_page + 3)
+
     category_name = category.category_name
     category = AssetCategory.objects.all()
-    return render(request, 'category_table.html', {'category': category, 'assets': assets,'category_name': category_name})
+
+    context = {
+        'category': category,
+        'assets': assets,
+        'category_name': category_name,
+        'page_range': page_range,
+    }
+    
+    return render(request, 'category_table.html', context)
+
 
 
 # report view
@@ -153,20 +191,43 @@ def category_table(request, category_id):
 def report(request):
     category = AssetCategory.objects.all()
     report_list = Report.objects.order_by('item_creation_date').all()
+
     # Handle search functionality
     search_term = request.GET.get('search_term')
     if search_term:
         report_list = report_list.filter(asset__asset_id__icontains=search_term)
 
-    paginator = Paginator(report_list, 2) # Show 2 reports per page
+    paginator = Paginator(report_list, 10)  # Show 10 reports per page
     page = request.GET.get('page')
     reports = paginator.get_page(page)
+
+    # Calculate the range of pages to display
+    num_pages = paginator.num_pages
+    current_page = reports.number
+
+    if num_pages <= 5:
+        page_range = range(1, num_pages + 1)
+    elif current_page <= 3:
+        page_range = range(1, 6)
+    elif current_page >= num_pages - 2:
+        page_range = range(num_pages - 4, num_pages + 1)
+    else:
+        page_range = range(current_page - 2, current_page + 3)
+
+    prev_page = reports.previous_page_number if reports.has_previous() else None
+    next_page = reports.next_page_number if reports.has_next() else None
+
     context = {
         'category': category,
         'reports': reports,
         'search_term': search_term,
+        'page_range': page_range,
+        'prev_page': prev_page,
+        'next_page': next_page,
     }
+
     return render(request, 'report.html', context)
+
 
 
 # report remark view
@@ -177,7 +238,10 @@ def report_remark(request):
         r = get_object_or_404(Report, asset_id=asset_id)
         r.remark = request.POST['remark']
         r.save()
+        
+        messages.success(request, 'Remark updated successfully')
         return redirect('backend:report')
+
 
 # delete report 
 @login_required
@@ -185,7 +249,10 @@ def delete_report(request, report_id):
     if request.method == 'POST':
         report = get_object_or_404(Report, asset__asset_id=report_id)
         report.delete()
+
+        messages.success(request, 'Report deleted successfully')
         return redirect('backend:report')
+
 
 
 
@@ -208,19 +275,19 @@ def profile(request):
             messages.success(request, 'Your password was successfully updated!')
             return redirect(reverse('backend:profile'))
         else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field.capitalize()}: {error}")
             messages.error(request, 'Please correct the errors below.')
     else:
         form = PasswordChangeForm(request.user)
     
     if request.user.is_staff or request.user.is_superuser:
         category = AssetCategory.objects.all()
-        return render(request, 'profile.html', {'form': form,'category':category,})
+        return render(request, 'profile.html', {'form': form, 'category': category})
     else:
         messages.error(request, 'You do not have permission to access this page.')
         return redirect(reverse('backend:profile'))
-
-
-
 
 # username and email change
 @login_required
@@ -228,9 +295,18 @@ def update_admin_profile(request):
     if request.method == 'POST':
         user = request.user
         if user.is_staff or user.is_superuser:
+            old_username = user.username
+            old_email = user.email
+
             user.username = request.POST.get('username')
             user.email = request.POST.get('email')
             user.save()
+
+            if user.username != old_username:
+                messages.success(request, 'Username has been changed successfully.')
+            if user.email != old_email:
+                messages.success(request, 'Email has been changed successfully.')
+
             return redirect(reverse('backend:profile'))
     return render(request, 'profile.html')
 
@@ -240,20 +316,13 @@ def update_admin_profile(request):
 @login_required
 def user_list(request):
     if request.user.is_superuser:
-        users = User.objects.select_related('groups').all()
-        category = AssetCategory.objects.all()
-        context = {'users': users,'category': category}
-        return render(request, 'users.html', context)
-    else:
-        messages.error(request, 'You do not have permission to access this page.')
-        return redirect(reverse('backend:dashboard'))
+        query = request.GET.get('q')  # Get the search query from the request
+        user_list = User.objects.all().order_by('-id')
 
-# manage user table pagination
-@login_required
-def user_list(request):
-    if request.user.is_superuser:
-        user_list = User.objects.all()
-        paginator = Paginator(user_list, 5) # Show 10 users per page
+        if query:
+            user_list = user_list.filter(Q(username__icontains=query))  # Filter users by username
+
+        paginator = Paginator(user_list, 10)  # Show 10 users per page
 
         page = request.GET.get('page')
         try:
@@ -265,7 +334,9 @@ def user_list(request):
             # If page is out of range (e.g. 9999), deliver last page of results.
             users = paginator.page(paginator.num_pages)
 
-        return render(request, 'users.html', {'users': users})
+        category = AssetCategory.objects.all()
+        context = {'users': users, 'category': category, 'search_query': query}
+        return render(request, 'users.html', context)
     else:
         messages.error(request, 'You do not have permission to access this page.')
         return redirect(reverse('backend:dashboard'))
@@ -310,6 +381,12 @@ def add_user(request):
             new_user.groups.add(group)
             new_user.is_staff = True
             new_user.save()
+        elif role == 'ICT_user':
+            # Create the "ict_user" group if it doesn't exist
+            group, created = Group.objects.get_or_create(name='ict_user')
+            new_user.groups.add(group)
+            new_user.is_staff = True
+            new_user.save()
         else:
             messages.error(request, 'Invalid role')
             return redirect(reverse('backend:user_list'))
@@ -317,16 +394,48 @@ def add_user(request):
         messages.success(request, 'User created successfully')
         return redirect(reverse('backend:user_list'))
 
-    return render(request, 'users.html')
+    return render(request, 'users.html', {'user_created': False})
 
+# def add_user(request):
+#     if request.method == 'POST':
+#         # get form data
+#         username = request.POST.get('username')
+#         email = request.POST.get('email')
+#         password = request.POST.get('password')
+#         confirm_password = request.POST.get('confirm_password')
+#         role = request.POST.get('role')
 
-#Read qr code and display asset detail page
-# from django.shortcuts import render, get_object_or_404
-# from backend.models import Asset, AssetCategory
+#         # validate form data
+#         if password != confirm_password:
+#             messages.error(request, 'Passwords do not match')
+#             return redirect('add_user')
 
-# def asset_details(request, asset_id):
-#     asset = get_object_or_404(Asset, asset_id=asset_id)
-#     return render(request, 'detail.html', {'asset': asset})
+#         # create new user
+#         new_user = User.objects.create_user(username=username, email=email, password=password)
+
+#         # add role to new user
+#         if role == 'admin':
+#             new_user.is_superuser = True
+#             new_user.is_staff = True
+#             new_user.save()
+#         elif role == 'staff_user':
+#             new_user.is_staff = True
+#             new_user.save()
+#         elif role == 'state_user':
+#             # Create the "state_user" group if it doesn't exist
+#             group, created = Group.objects.get_or_create(name='state_user')
+#             new_user.groups.add(group)
+#             new_user.is_staff = True
+#             new_user.save()
+#         else:
+#             messages.error(request, 'Invalid role')
+#             return redirect(reverse('backend:user_list'))
+
+#         messages.success(request, 'User created successfully')
+#         return redirect(reverse('backend:user_list'))
+
+#     return render(request, 'users.html', {'user_created': False})
+
 
 
 # adding asset details individually
@@ -343,12 +452,14 @@ def add_asset(request):
         purchase_date = request.POST['purchase_date']
         asset = Asset(asset_id=asset_id, name=name, category=category, sub_category=sub_category, location=location, owner=owner, purchase_date=purchase_date)
         asset.save()
-        
-        return redirect(reverse('backend:manageasset')) 
-    
+        messages.success(request, 'Asset added successfully.')
+        return redirect(reverse('backend:manageasset'))
     return render(request, 'tables.html')
 
+
+
 # edit asset details
+@login_required
 @login_required
 def edit_asset(request):
     if request.method == 'POST':
@@ -362,24 +473,33 @@ def edit_asset(request):
         asset.owner = request.POST['owner']
         asset.purchase_date = request.POST['purchase_date']
         asset.save()
-
+        
+        messages.success(request, 'Asset updated successfully')
         return redirect(reverse('backend:manageasset'))
     
     return render(request, 'tables.html')
 
+
 # delete asset
 @login_required 
-def delete_asset(request,asset_id):
-    asset_id = request.POST.get('asset_id')
-    asset = Asset.objects.get(id=asset_id)
-    asset.delete()
-    return redirect(reverse('backend:manageasset'))
-
-#delete asset 
 def delete_asset(request, asset_id):
     asset = get_object_or_404(Asset, asset_id=asset_id)
     asset.delete()
+    
+    messages.success(request, 'Asset deleted successfully')
     return redirect(reverse('backend:manageasset'))
+
+# def delete_asset(request,asset_id):
+#     asset_id = request.POST.get('asset_id')
+#     asset = Asset.objects.get(id=asset_id)
+#     asset.delete()
+#     return redirect(reverse('backend:manageasset'))
+
+# #delete asset 
+# def delete_asset(request, asset_id):
+#     asset = get_object_or_404(Asset, asset_id=asset_id)
+#     asset.delete()
+#     return redirect(reverse('backend:manageasset'))
 
 # view of report of faulty asset
 def save_report(request):
@@ -438,20 +558,12 @@ def upload_excel_file(request):
             purchase_date_str = row[6]
             asset.item_creation_date = datetime.now()
 
-            # if isinstance(purchase_date_str, datetime):
-            #     purchase_date = purchase_date_str.date()
-            # else:
-            #     if isinstance(purchase_date_str, int):
-            #         purchase_date_str = str(purchase_date_str)  # Convert integer to string
-            #     purchase_date = datetime.strptime(purchase_date_str, '%m/%d/%y').date()
-            # asset.purchase_date = purchase_date
-            # asset.save()
-
-            if isinstance(purchase_date_str, datetime): # check if the variable is already in datetime format
-                purchase_date = purchase_date_str.date()
-            else:
-                purchase_date = datetime.strptime(purchase_date_str, '%m/%d/%y').date() # format the date string to the expected format
-            asset.purchase_date = purchase_date
+            if purchase_date_str:
+                if isinstance(purchase_date_str, datetime):
+                    purchase_date = purchase_date_str.date()
+                else:
+                    purchase_date = datetime.strptime(purchase_date_str, '%d/%m/%Y').date() 
+                asset.purchase_date = purchase_date
             asset.save()
 
         messages.success(request, 'File Uploaded Successfully')
