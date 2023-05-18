@@ -8,6 +8,8 @@ from django.contrib.auth.decorators import login_required
 
 from django.conf import settings
 from django.conf.urls.static import static
+from django.urls import re_path
+
 
 app_name = 'backend'
 
@@ -26,7 +28,8 @@ urlpatterns = [
     path('category/<int:category_id>/', category_table, name='category_table'),
     path('report/',report,name='report'),
     path('report_remark/',report_remark, name='report_remark'),
-    path('report/<int:report_id>/delete/', delete_report, name='delete_report'),
+    # path('report/<int:report_id>/delete/', delete_report, name='delete_report'),
+    re_path(r'^report/(?P<report_id>[0-9a-zA-Z]+)/delete/$', delete_report, name='delete_report'),
     path('save_report/', save_report, name='save_report'),
     # path('asset/<str:asset_id>/',asset_details, name='asset_details'),
     path('add-asset/',add_asset,name='add_asset'),

@@ -68,16 +68,30 @@ class Asset(models.Model):
         super().save(*args, **kwargs)
 
 
+# class Report(models.Model):
+#     name = models.CharField(max_length=100)
+#     email = models.EmailField(max_length=100)
+#     description = models.TextField()
+#     asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
+#     remark = models.TextField(blank=True, null=True)
+#     item_creation_date = models.DateTimeField(auto_now_add=True) 
+    
+#     def __str__(self):
+#         return f'{self.name} - {self.asset.asset_id}'
+
 class Report(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField(max_length=100)
     description = models.TextField()
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
+    service_type = models.CharField(max_length=100, default='none')  # Add default='none'
     remark = models.TextField(blank=True, null=True)
-    item_creation_date = models.DateTimeField(auto_now_add=True) 
-    
+    item_creation_date = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
         return f'{self.name} - {self.asset.asset_id}'
+
+
 
 
 

@@ -11,10 +11,19 @@ admin.site.register(AssetCategory)
 
 
 
-from backend.models import Asset,Report
+# from backend.models import Asset,Report
+
+# class AssetReportAdmin(admin.ModelAdmin):
+#     list_display = ('asset', 'name', 'email', 'description','remark')
+#     list_filter = ('asset',)
+#     search_fields = ('asset__asset_id', 'name', 'email', 'description')
+
+# admin.site.register(Report, AssetReportAdmin)
+
+from backend.models import Asset, Report
 
 class AssetReportAdmin(admin.ModelAdmin):
-    list_display = ('asset', 'name', 'email', 'description','remark')
+    list_display = ('asset', 'name', 'email', 'service_type', 'description', 'remark')
     list_filter = ('asset',)
     search_fields = ('asset__asset_id', 'name', 'email', 'description')
 

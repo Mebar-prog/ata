@@ -190,7 +190,30 @@ def category_table(request, category_id):
 @login_required
 def report(request):
     category = AssetCategory.objects.all()
-    report_list = Report.objects.order_by('item_creation_date').all()
+    user = request.user
+    
+    show_reports = False
+
+    if user.is_superuser and user.is_staff:
+        # Show all reports for superadmin and staff users
+        report_list = Report.objects.order_by('item_creation_date').all()
+        show_reports = True
+    elif user.is_staff and not user.groups.exists():
+    # Show all reports for superadmin and staff users
+        report_list = Report.objects.order_by('item_creation_date').all()
+        show_reports = True
+
+    elif user.groups.filter(name='state_user').exists():
+        # Show only estate service reports for staff users in state_user group
+        report_list = Report.objects.filter(service_type='estate').order_by('item_creation_date').all()
+        show_reports = True
+    elif user.groups.filter(name='ict_user').exists():
+        # Show only ICT service reports for staff users in ict_user group
+        report_list = Report.objects.filter(service_type='ict').order_by('item_creation_date').all()
+        show_reports = True
+    else:
+        # For other users, show no reports
+        report_list = Report.objects.none()
 
     # Handle search functionality
     search_term = request.GET.get('search_term')
@@ -224,9 +247,11 @@ def report(request):
         'page_range': page_range,
         'prev_page': prev_page,
         'next_page': next_page,
+        'show_reports': show_reports,
     }
 
     return render(request, 'report.html', context)
+
 
 
 
@@ -396,47 +421,6 @@ def add_user(request):
 
     return render(request, 'users.html', {'user_created': False})
 
-# def add_user(request):
-#     if request.method == 'POST':
-#         # get form data
-#         username = request.POST.get('username')
-#         email = request.POST.get('email')
-#         password = request.POST.get('password')
-#         confirm_password = request.POST.get('confirm_password')
-#         role = request.POST.get('role')
-
-#         # validate form data
-#         if password != confirm_password:
-#             messages.error(request, 'Passwords do not match')
-#             return redirect('add_user')
-
-#         # create new user
-#         new_user = User.objects.create_user(username=username, email=email, password=password)
-
-#         # add role to new user
-#         if role == 'admin':
-#             new_user.is_superuser = True
-#             new_user.is_staff = True
-#             new_user.save()
-#         elif role == 'staff_user':
-#             new_user.is_staff = True
-#             new_user.save()
-#         elif role == 'state_user':
-#             # Create the "state_user" group if it doesn't exist
-#             group, created = Group.objects.get_or_create(name='state_user')
-#             new_user.groups.add(group)
-#             new_user.is_staff = True
-#             new_user.save()
-#         else:
-#             messages.error(request, 'Invalid role')
-#             return redirect(reverse('backend:user_list'))
-
-#         messages.success(request, 'User created successfully')
-#         return redirect(reverse('backend:user_list'))
-
-#     return render(request, 'users.html', {'user_created': False})
-
-
 
 # adding asset details individually
 @login_required
@@ -459,7 +443,6 @@ def add_asset(request):
 
 
 # edit asset details
-@login_required
 @login_required
 def edit_asset(request):
     if request.method == 'POST':
@@ -509,6 +492,7 @@ def save_report(request):
         asset = Asset.objects.get(asset_id=asset_id)
         name = request.POST['name']
         email = request.POST['email']
+        service_type = request.POST['service']  # Get the selected service type
         description = request.POST['description']
 
         # Check if a report object already exists for this asset
@@ -519,23 +503,73 @@ def save_report(request):
         report = Report.objects.create(
             name=name,
             email=email,
+            service_type=service_type,  # Save the selected service type
             description=description,
             asset=asset
         )
-        
-        user_emails = list(User.objects.values_list('email', flat=True))
-        # Send email to all users in the system
+
+        # Get the group name based on the service type
+        group_name = 'state_user' if service_type == 'estate' else 'ict_user'
+
+        # Get the users in the group
+        group = Group.objects.get(name=group_name)
+        users = group.user_set.all()
+
+        # Retrieve the admin user
+        admin_user = User.objects.filter(is_superuser=True).first()
+
+        # Exclude the admin user from the recipients
+        users = users.exclude(id=admin_user.id)
+
+        # Send email to the users in the group
+        user_emails = list(users.values_list('email', flat=True))
         send_mail(
-        'New Report Submitted',
-        f'A new report has been submitted for asset id {asset_id}.\n\nName: {name}\nEmail: {email}\nDescription: {description}',
-        'from@example.com',
-        user_emails,
-        fail_silently=False,
-)
+            'New Report Submitted',
+            f'A new report has been submitted for asset id {asset_id}.\n\nName: {name}\nEmail: {email}\nService Type: {service_type}\nDescription: {description}',
+            'from@example.com',
+            user_emails,
+            fail_silently=False,
+        )
 
         return redirect('frontend:index')
 
     return render(request, 'frontend/detail.html')
+
+
+# def save_report(request):
+#     if request.method == 'POST':
+#         # Get the form data
+#         asset_id = request.POST['asset_id']
+#         asset = Asset.objects.get(asset_id=asset_id)
+#         name = request.POST['name']
+#         email = request.POST['email']
+#         description = request.POST['description']
+
+#         # Check if a report object already exists for this asset
+#         if Report.objects.filter(asset=asset).exists():
+#             return redirect(reverse('frontend:report_error'))
+
+#         # Create a new report object
+#         report = Report.objects.create(
+#             name=name,
+#             email=email,
+#             description=description,
+#             asset=asset
+#         )
+        
+#         user_emails = list(User.objects.values_list('email', flat=True))
+#         # Send email to all users in the system
+#         send_mail(
+#         'New Report Submitted',
+#         f'A new report has been submitted for asset id {asset_id}.\n\nName: {name}\nEmail: {email}\nDescription: {description}',
+#         'from@example.com',
+#         user_emails,
+#         fail_silently=False,
+# )
+
+#         return redirect('frontend:index')
+
+#     return render(request, 'frontend/detail.html')
 
 
 # upload asset detail in bulk

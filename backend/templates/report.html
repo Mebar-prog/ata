@@ -229,39 +229,40 @@
         </a> -->
       </header>
       <div class="card-content">
-        <table>
-          <thead>
-            <tr>
-              <th>sl.no</th>
-              <th>Asset ID</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Description</th>
-              <th>Report Date</th>
-              <th>Remark</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for report in reports %}
-            <tr>
-              <td class="slno">{{ forloop.counter0|add:reports.start_index }}</td>
-              <td data-label="Cagetory">{{ report.asset.asset_id }}</td>
-              <td data-label="Sender">{{ report.name }}</td>
-              <td data-label="Email">{{ report.email }}</td>
-              <td data-label="Description">{{ report.description }}</td>
-              <td data-label="Report Date">{{ report.item_creation_date }}</td>
-              <td data-label="Remark">{{ report.remark }}</td>
-              <td class="actions-cell">
-                <div class="buttons middle nowrap">
-                  <button class="button small green --jb-modal" data-target="sample-modal-remark" data-asset-id="{{ report.asset.asset_id }}" data-asset-remark="{{ report.remark }}" type="button">
-                    <span class="icon"><i class="mdi mdi-pencil"></i></span>                  
-                  </button>
-      
-                  <button class="button small red --jb-modal" data-target="sample-modal-del-{{ report.asset.asset_id }}" type="button">
-                    <span class="icon"><i class="mdi mdi-trash-can"></i></span>
-                  </button>
 
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>sl.no</th>
+                        <th>Asset ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Description</th>
+                        <th>Report Date</th>
+                        <th>Remark</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% if reports %}
+                        {% for report in reports %}
+                          <tr>
+                            <td class="slno">{{ forloop.counter0|add:reports.start_index }}</td>
+                            <td data-label="Category">{{ report.asset.asset_id }}</td>
+                            <td data-label="Sender">{{ report.name }}</td>
+                            <td data-label="Email">{{ report.email }}</td>
+                            <td data-label="Description">{{ report.description }}</td>
+                            <td data-label="Report Date">{{ report.item_creation_date }}</td>
+                            <td data-label="Remark">{{ report.remark }}</td>
+                            <td class="actions-cell">
+                              <div class="buttons middle nowrap">
+                                <button class="button small green --jb-modal" data-target="sample-modal-remark" data-asset-id="{{ report.asset.asset_id }}" data-asset-remark="{{ report.remark }}" type="button">
+                                  <span class="icon"><i class="mdi mdi-pencil"></i></span>                  
+                                </button>
+                  
+                                <button class="button small red --jb-modal" data-target="sample-modal-del-{{ report.asset.asset_id }}" type="button">
+                                  <span class="icon"><i class="mdi mdi-trash-can"></i></span>
+                                </button>
                   <!-- del modal -->
                   <div id="sample-modal-del-{{ report.asset.asset_id }}" class="modal">
                     <div class="modal-background --jb-modal-close"></div>
@@ -288,6 +289,11 @@
               </td>
             </tr>
             {% endfor %}
+            {% else %}
+            <tr>
+              <td colspan="8" class="no-reports">No reports available.</td>
+            </tr>
+          {% endif %}
           </tbody>
         </table>
         
