@@ -596,7 +596,7 @@ def upload_excel_file(request):
                 if isinstance(purchase_date_str, datetime):
                     purchase_date = purchase_date_str.date()
                 else:
-                    purchase_date = datetime.strptime(purchase_date_str, '%d/%m/%Y').date() 
+                    purchase_date = datetime.strptime(purchase_date_str, '%m/%d/%Y').date() 
                 asset.purchase_date = purchase_date
             asset.save()
 
