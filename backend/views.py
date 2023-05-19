@@ -9,6 +9,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
+import pandas as pd
+from backend.forms import AssetUploadForm
 from datetime import datetime
 from openpyxl import load_workbook
 import os
@@ -572,11 +574,6 @@ def save_report(request):
 #     return render(request, 'frontend/detail.html')
 
 
-import pandas as pd
-from django.shortcuts import render
-from .forms import AssetUploadForm
-from .models import Asset, AssetCategory
-from django.utils import timezone
 
 # upload asset detail in bulk
 def upload_assets(request):
@@ -591,6 +588,10 @@ def upload_assets(request):
             for _, row in df.iterrows():
                 asset_category, _ = AssetCategory.objects.get_or_create(category_name=row['category'])
 
+                # Convert the purchase_date to the desired format
+                purchase_date_str = str(row['purchase_date'])  # Convert to string
+                purchase_date = datetime.strptime(purchase_date_str, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
+
                 asset = Asset(
                     asset_id=row['asset_id'],
                     name=row['name'],
@@ -598,7 +599,7 @@ def upload_assets(request):
                     sub_category=row['sub_category'],
                     location=row['location'],
                     owner=row['owner'],
-                    purchase_date=row['purchase_date']
+                    purchase_date=purchase_date
                 )
                 asset.save()
                 
@@ -606,6 +607,34 @@ def upload_assets(request):
             return redirect(reverse('backend:manageasset'))  # Display a success message
 
     return render(request, 'tables.html', {'form': form})
+
+# def upload_assets(request):
+#     form = AssetUploadForm()
+
+#     if request.method == 'POST':
+#         form = AssetUploadForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             file = form.cleaned_data['file']
+#             df = pd.read_excel(file)
+
+#             for _, row in df.iterrows():
+#                 asset_category, _ = AssetCategory.objects.get_or_create(category_name=row['category'])
+
+#                 asset = Asset(
+#                     asset_id=row['asset_id'],
+#                     name=row['name'],
+#                     category=asset_category,
+#                     sub_category=row['sub_category'],
+#                     location=row['location'],
+#                     owner=row['owner'],
+#                     purchase_date=row['purchase_date']
+#                 )
+#                 asset.save()
+                
+#             messages.success(request, 'File Uploaded Successfully')
+#             return redirect(reverse('backend:manageasset'))  # Display a success message
+
+#     return render(request, 'tables.html', {'form': form})
 
 # def upload_excel_file(request):
 #     if request.method == 'POST' and request.FILES['excel_file']:
