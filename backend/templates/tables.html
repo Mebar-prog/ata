@@ -525,13 +525,13 @@
     <header class="modal-card-head">
       <p class="modal-card-title">Upload Excel File</p>
     </header>
-    <form method="post" enctype="multipart/form-data" action="{% url 'backend:upload_excel_file' %}">
+    <form method="post" enctype="multipart/form-data" action="{% url 'backend:upload_assets' %}">
       {% csrf_token %}
       <section class="modal-card-body">
         <div class="field">
           <label class="label">Choose Excel File:</label>
           <div class="control">
-            <input type="file" name="excel_file" accept=".xlsx, .xls">
+            <input type="file" name="file" accept=".xlsx, .xls">
           </div>
         </div>
       </section>

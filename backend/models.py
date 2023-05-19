@@ -5,13 +5,15 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.files.base import ContentFile
 from django.urls import reverse
 import urllib.parse
+from django.utils import timezone
+
 
 # Create your models here. 
 class AssetCategory(models.Model):
     category_name = models.CharField(max_length=100,null=True)
     item_creation_date = models.DateTimeField(auto_now_add=True)
     def __str__(self):
-        return self.category_name
+        return self.category_name or ''
     
 
 class Asset(models.Model):
@@ -23,7 +25,7 @@ class Asset(models.Model):
     location = models.CharField(max_length=100)
     owner = models.CharField(max_length=100)
     purchase_date = models.DateField()
-    item_creation_date = models.DateTimeField(auto_now_add=True)
+    item_creation_date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.asset_id

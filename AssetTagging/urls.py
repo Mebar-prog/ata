@@ -8,8 +8,6 @@ from django.conf.urls.static import static
 
 from django.urls import path, include
 
-
-
 urlpatterns = [
     path('dj-admin/', admin.site.urls),
     path('', include('frontend.urls', namespace='frontend')),
