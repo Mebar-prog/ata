@@ -590,9 +590,8 @@ def upload_assets(request):
 
                 # Convert the purchase_date to the desired format
                 purchase_date_str = str(row['purchase_date'])  # Convert to string
-                purchase_date = datetime.strptime(purchase_date_str, '%m/%d/%Y').strftime('%Y-%m-%d')
-
-
+                purchase_date = datetime.strptime(purchase_date_str, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
+                
                 asset = Asset(
                     asset_id=row['asset_id'],
                     name=row['name'],
