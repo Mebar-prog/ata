@@ -321,7 +321,10 @@ div#preloader {
     display: inline-block;
     height: auto;
     padding: 18px 0;
+    width: 75px; /* Adjust the width as desired */
+    height: auto;
 }
+
 .center-bg {
     display: block;
     background: #fff;
@@ -552,7 +555,7 @@ div#preloader {
 
 .mobile-menu-area {
     background: #fdfcfc none repeat scroll 0 0;
-    padding: 35px 0px;
+    padding: 39px 0px;
   }
   
   /* Logo */
