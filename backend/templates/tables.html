@@ -15,7 +15,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'backend/favicon.ico' %}"/>
     <link rel="mask-icon" href="safari-pinned-tab.svg" color="#00b4b6"/>
   
-    <meta name="description" content="Admin One - free Tailwind dashboard">
+    <meta name="description" content="ATA">
   
   
     <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -626,9 +626,17 @@
 <script>
   function printQR(qrCodeUrl) {
     var printWindow = window.open(qrCodeUrl);
+    printWindow.document.write('<html><head><style>@media print { img { width: 5cm; height: 5cm; } }</style></head><body><img src="' + qrCodeUrl + '"></body></html>');
+    printWindow.document.close();
     printWindow.print();
   }
 </script>
+<!-- <script>
+  function printQR(qrCodeUrl) {
+    var printWindow = window.open(qrCodeUrl);
+    printWindow.print();
+  }
+</script> -->
 <!-- script to pre-populate the edit details form  -->
 <script>
   document.addEventListener('DOMContentLoaded', () => {
