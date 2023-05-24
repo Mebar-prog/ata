@@ -114,13 +114,17 @@ def category(request):
 def add_category(request):
     if request.method == 'POST':
         category_name = request.POST.get('category_name')
-        category = AssetCategory.objects.create(category_name=category_name)
 
-        messages.success(request, 'Category added successfully')
+        # Check if the category name already exists
+        if AssetCategory.objects.filter(category_name=category_name).exists():
+            messages.error(request, 'Category already exists')
+        else:
+            category = AssetCategory.objects.create(category_name=category_name)
+            messages.success(request, 'Category added successfully')
+
         return redirect('backend:category')
     else:
         return render(request, 'category.html')
-
 
 #delete category
 @login_required
@@ -425,6 +429,8 @@ def add_user(request):
 
 
 # adding asset details individually
+
+
 @login_required
 def add_asset(request):
     if request.method == 'POST':
@@ -436,11 +442,27 @@ def add_asset(request):
         location = request.POST['location']
         owner = request.POST['owner']
         purchase_date = request.POST['purchase_date']
-        asset = Asset(asset_id=asset_id, name=name, category=category, sub_category=sub_category, location=location, owner=owner, purchase_date=purchase_date)
+        
+        # Check if asset_id already exists
+        if Asset.objects.filter(asset_id=asset_id).exists():
+            messages.error(request, 'Asset with the same ID already exists.')
+            return redirect(reverse('backend:manageasset'))
+        
+        asset = Asset(
+            asset_id=asset_id,
+            name=name,
+            category=category,
+            sub_category=sub_category,
+            location=location,
+            owner=owner,
+            purchase_date=purchase_date
+        )
         asset.save()
         messages.success(request, 'Asset added successfully.')
         return redirect(reverse('backend:manageasset'))
+    
     return render(request, 'tables.html')
+
 
 
 
@@ -585,28 +607,73 @@ def upload_assets(request):
             file = form.cleaned_data['file']
             df = pd.read_excel(file)
 
-            for _, row in df.iterrows():
-                asset_category, _ = AssetCategory.objects.get_or_create(category_name=row['category'])
+            existing_asset_ids = Asset.objects.values_list('asset_id', flat=True)
 
-                # Convert the purchase_date to the desired format
-                purchase_date_str = str(row['purchase_date'])  # Convert to string
-                purchase_date = datetime.strptime(purchase_date_str, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
-                
-                asset = Asset(
-                    asset_id=row['asset_id'],
-                    name=row['name'],
-                    category=asset_category,
-                    sub_category=row['sub_category'],
-                    location=row['location'],
-                    owner=row['owner'],
-                    purchase_date=purchase_date
-                )
-                asset.save()
-                
-            messages.success(request, 'File Uploaded Successfully')
+            duplicate_assets = []
+            new_assets = []
+
+            for _, row in df.iterrows():
+                asset_id = row['asset_id']
+                if asset_id in existing_asset_ids:
+                    duplicate_assets.append(asset_id)
+                else:
+                    asset_category, _ = AssetCategory.objects.get_or_create(category_name=row['category'])
+                    purchase_date_str = str(row['purchase_date'])
+                    purchase_date = datetime.strptime(purchase_date_str, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
+                    asset = Asset(
+                        asset_id=asset_id,
+                        name=row['name'],
+                        category=asset_category,
+                        sub_category=row['sub_category'],
+                        location=row['location'],
+                        owner=row['owner'],
+                        purchase_date=purchase_date
+                    )
+                    new_assets.append(asset)
+
+            if duplicate_assets:
+                messages.warning(request, f"The following assets already exist")
+
+            if new_assets:
+                Asset.objects.bulk_create(new_assets)
+                messages.success(request, 'File Uploaded Successfully')
+
             return redirect(reverse('backend:manageasset'))  # Display a success message
 
     return render(request, 'tables.html', {'form': form})
+
+
+# def upload_assets(request):
+#     form = AssetUploadForm()
+
+#     if request.method == 'POST':
+#         form = AssetUploadForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             file = form.cleaned_data['file']
+#             df = pd.read_excel(file)
+
+#             for _, row in df.iterrows():
+#                 asset_category, _ = AssetCategory.objects.get_or_create(category_name=row['category'])
+
+#                 # Convert the purchase_date to the desired format
+#                 purchase_date_str = str(row['purchase_date'])  # Convert to string
+#                 purchase_date = datetime.strptime(purchase_date_str, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
+                
+#                 asset = Asset(
+#                     asset_id=row['asset_id'],
+#                     name=row['name'],
+#                     category=asset_category,
+#                     sub_category=row['sub_category'],
+#                     location=row['location'],
+#                     owner=row['owner'],
+#                     purchase_date=purchase_date
+#                 )
+#                 asset.save()
+                
+#             messages.success(request, 'File Uploaded Successfully')
+#             return redirect(reverse('backend:manageasset'))  # Display a success message
+
+#     return render(request, 'tables.html', {'form': form})
 
 # def upload_assets(request):
 #     form = AssetUploadForm()
@@ -675,7 +742,7 @@ def export_to_excel(request):
     ws = wb.active
     
     # Write the headers for the Excel file
-    headers = ['Asset ID', 'Name', 'Category', 'Sub Category', 'Location', 'Owner', 'Purchase Date']
+    headers = ['asset_id', 'name', 'category', 'sub_category', 'location', 'owner', 'purchase_date']
     ws.append(headers)
     
     # Write the asset data to the Excel file
