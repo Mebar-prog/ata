@@ -634,103 +634,17 @@ def upload_assets(request):
 
             if new_assets:
                 Asset.objects.bulk_create(new_assets)
+
+                # Generate QR code and save for each asset
+                for asset in new_assets:
+                    asset.save()
+
                 messages.success(request, 'File Uploaded Successfully')
 
             return redirect(reverse('backend:manageasset'))  # Display a success message
 
     return render(request, 'tables.html', {'form': form})
 
-
-# def upload_assets(request):
-#     form = AssetUploadForm()
-
-#     if request.method == 'POST':
-#         form = AssetUploadForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             file = form.cleaned_data['file']
-#             df = pd.read_excel(file)
-
-#             for _, row in df.iterrows():
-#                 asset_category, _ = AssetCategory.objects.get_or_create(category_name=row['category'])
-
-#                 # Convert the purchase_date to the desired format
-#                 purchase_date_str = str(row['purchase_date'])  # Convert to string
-#                 purchase_date = datetime.strptime(purchase_date_str, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
-                
-#                 asset = Asset(
-#                     asset_id=row['asset_id'],
-#                     name=row['name'],
-#                     category=asset_category,
-#                     sub_category=row['sub_category'],
-#                     location=row['location'],
-#                     owner=row['owner'],
-#                     purchase_date=purchase_date
-#                 )
-#                 asset.save()
-                
-#             messages.success(request, 'File Uploaded Successfully')
-#             return redirect(reverse('backend:manageasset'))  # Display a success message
-
-#     return render(request, 'tables.html', {'form': form})
-
-# def upload_assets(request):
-#     form = AssetUploadForm()
-
-#     if request.method == 'POST':
-#         form = AssetUploadForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             file = form.cleaned_data['file']
-#             df = pd.read_excel(file)
-
-#             for _, row in df.iterrows():
-#                 asset_category, _ = AssetCategory.objects.get_or_create(category_name=row['category'])
-
-#                 asset = Asset(
-#                     asset_id=row['asset_id'],
-#                     name=row['name'],
-#                     category=asset_category,
-#                     sub_category=row['sub_category'],
-#                     location=row['location'],
-#                     owner=row['owner'],
-#                     purchase_date=row['purchase_date']
-#                 )
-#                 asset.save()
-                
-#             messages.success(request, 'File Uploaded Successfully')
-#             return redirect(reverse('backend:manageasset'))  # Display a success message
-
-#     return render(request, 'tables.html', {'form': form})
-
-# def upload_excel_file(request):
-#     if request.method == 'POST' and request.FILES['excel_file']:
-#         excel_file = request.FILES['excel_file']
-#         wb = load_workbook(excel_file)
-#         worksheet = wb['Sheet1']
-#         for row in worksheet.iter_rows(min_row=2, values_only=True):
-#             asset = Asset()
-#             asset.asset_id = row[0]
-#             asset.name = row[1]
-#             category_name = row[2]
-#             category, created = AssetCategory.objects.get_or_create(category_name=category_name)
-#             asset.category = category
-#             asset.sub_category = row[3]
-#             asset.location = row[4]
-#             asset.owner = row[5]
-#             purchase_date_str = row[6]
-#             asset.item_creation_date = datetime.now()
-
-#             if purchase_date_str:
-#                 if isinstance(purchase_date_str, datetime):
-#                     purchase_date = purchase_date_str.date()
-#                 else:
-#                     purchase_date = datetime.strptime(purchase_date_str, '%m/%d/%Y').date() 
-#                 asset.purchase_date = purchase_date
-#             asset.save()
-
-#         messages.success(request, 'File Uploaded Successfully')
-#         return redirect(reverse('backend:manageasset'))
-
-#     return render(request, 'tables.html')
 
 # export asset details in excel format
 @login_required
