@@ -429,8 +429,6 @@ def add_user(request):
 
 
 # adding asset details individually
-
-
 @login_required
 def add_asset(request):
     if request.method == 'POST':

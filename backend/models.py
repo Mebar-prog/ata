@@ -1,12 +1,8 @@
 from django.db import models
 import qrcode
 from io import BytesIO
-from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.files.base import ContentFile
-from django.urls import reverse
-import urllib.parse
 from django.utils import timezone
-
 
 # Create your models here. 
 class AssetCategory(models.Model):
@@ -68,18 +64,6 @@ class Asset(models.Model):
             self.generate_qr_code()
         # Call the parent class's save method
         super().save(*args, **kwargs)
-
-
-# class Report(models.Model):
-#     name = models.CharField(max_length=100)
-#     email = models.EmailField(max_length=100)
-#     description = models.TextField()
-#     asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
-#     remark = models.TextField(blank=True, null=True)
-#     item_creation_date = models.DateTimeField(auto_now_add=True) 
-    
-#     def __str__(self):
-#         return f'{self.name} - {self.asset.asset_id}'
 
 class Report(models.Model):
     name = models.CharField(max_length=100)

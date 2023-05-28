@@ -9,17 +9,6 @@ class AssetAdmin(admin.ModelAdmin):
 admin.site.register(Asset, AssetAdmin)
 admin.site.register(AssetCategory)
 
-
-
-# from backend.models import Asset,Report
-
-# class AssetReportAdmin(admin.ModelAdmin):
-#     list_display = ('asset', 'name', 'email', 'description','remark')
-#     list_filter = ('asset',)
-#     search_fields = ('asset__asset_id', 'name', 'email', 'description')
-
-# admin.site.register(Report, AssetReportAdmin)
-
 from backend.models import Asset, Report
 
 class AssetReportAdmin(admin.ModelAdmin):
