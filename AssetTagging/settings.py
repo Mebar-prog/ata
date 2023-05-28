@@ -175,12 +175,21 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'daec0esmt',
-    'API_KEY': '286856359452878',
-    'API_SECRET': 'XmiZTq8-3p-Yp7mD6t-W1ZOzOBo'
+    'CLOUD_NAME': 'dt4zsli8q',
+    'API_KEY': '711267198856194',
+    'API_SECRET': '0w6oN_9elcEHVJE5IWXcBAtenug'
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
+# CLOUDINARY_STORAGE = {
+#     'CLOUD_NAME': 'daec0esmt',
+#     'API_KEY': '286856359452878',
+#     'API_SECRET': 'XmiZTq8-3p-Yp7mD6t-W1ZOzOBo'
+# }
+
+# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
     
 
