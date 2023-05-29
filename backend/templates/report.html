@@ -25,11 +25,75 @@
     gtag('js', new Date());
     gtag('config', 'UA-130795909-1');
   </script>
+<style>
+/* Preloader CSS */
+.preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #fff; /* Set your desired background color */
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preloader .loader {
+  border: 4px solid rgba(0, 0, 0, 0.1); /* Set border color */
+  border-top: 4px solid #3498db; /* Set your desired loader color */
+  border-radius: 50%;
+  width: 60px; /* Set the desired size of the loader */
+  height: 60px; /* Set the desired size of the loader */
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Add animation effect to the preloader */
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.preloader {
+  animation: fadeInOut 3s linear infinite;
+}
+
+
+</style>
 
 </head>
-<body>
 
-<div id="app">
+<body>
+  <div id="app">
+    <div class="preloader">
+      <div class="loader"></div>
+  </div>
+
+  <script>
+    // JavaScript to hide the preloader when the page is fully loaded
+window.addEventListener('load', function () {
+  const preloader = document.querySelector('.preloader');
+  preloader.style.display = 'none';
+});
+
+  </script>
 
   <nav id="navbar-main" class="navbar is-fixed-top">
     <div class="navbar-brand">
@@ -393,13 +457,14 @@
 </div>
 
 <!-- report detials -->
-<div id="sample-modal-details" class="modal">
+ <div id="sample-modal-details" class="modal">
   <div class="modal-background --jb-modal-close"></div>
   <div class="modal-card">
     <header class="modal-card-head">
       <p class="modal-card-title">Asset Details</p>
     </header>
     <section class="modal-card-body">
+      
       <div class="field">
         <label class="label">Asset ID</label>
         <div class="control">
@@ -444,7 +509,7 @@
       </div>
     </section>
     <footer class="modal-card-foot">
-      <button class="button --jb-modal-close">Close</button>
+      <button class="button --jb-modal-close blue">Close</button>
     </footer>
   </div>
 </div>
@@ -469,7 +534,7 @@
     const assetOwnerInput = document.getElementById('asset-owner');
     const assetPurchaseDateInput = document.getElementById('asset-purchase-date');
 
-    modalButtons.forEach(button => {
+    modalButtons.forEach(button => {  
       button.addEventListener('click', () => {
         const assetId = button.dataset.assetId;
         const assetName = button.dataset.assetName;
@@ -527,6 +592,7 @@
 
   <!-- Scripts below are for demo only -->
   <script type="text/javascript" src="{% static 'backend/js/main.min.js' %}"></script>
+  
 
 
   <script>
