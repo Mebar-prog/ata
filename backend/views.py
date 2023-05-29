@@ -197,18 +197,19 @@ def category_table(request, category_id):
 def report(request):
     category = AssetCategory.objects.all()
     user = request.user
-    
+
     show_reports = False
+    hide_action_column = False  # Flag to determine if the action column should be hidden
 
     if user.is_superuser and user.is_staff:
         # Show all reports for superadmin and staff users
         report_list = Report.objects.order_by('item_creation_date').all()
         show_reports = True
     elif user.is_staff and not user.groups.exists():
-    # Show all reports for superadmin and staff users
+        # Show all reports for staff users who are not in any group
         report_list = Report.objects.order_by('item_creation_date').all()
         show_reports = True
-
+        hide_action_column = True  # Hide the action column for these users
     elif user.groups.filter(name='state_user').exists():
         # Show only estate service reports for staff users in state_user group
         report_list = Report.objects.filter(service_type='estate').order_by('item_creation_date').all()
@@ -254,9 +255,75 @@ def report(request):
         'prev_page': prev_page,
         'next_page': next_page,
         'show_reports': show_reports,
+        'hide_action_column': hide_action_column,  # Pass the flag to the template
     }
 
     return render(request, 'report.html', context)
+
+# @login_required
+# def report(request):
+#     category = AssetCategory.objects.all()
+#     user = request.user
+    
+#     show_reports = False
+
+#     if user.is_superuser and user.is_staff:
+#         # Show all reports for superadmin and staff users
+#         report_list = Report.objects.order_by('item_creation_date').order_by('item_creation_date').all()
+#         show_reports = True
+#     elif user.is_staff and not user.groups.exists():
+#     # Show all reports for superadmin and staff users
+#         report_list = Report.objects.order_by('item_creation_date').order_by('item_creation_date').all()
+#         show_reports = True
+
+#     elif user.groups.filter(name='state_user').exists():
+#         # Show only estate service reports for staff users in state_user group
+#         report_list = Report.objects.filter(service_type='estate').order_by('item_creation_date').all()
+#         show_reports = True
+#     elif user.groups.filter(name='ict_user').exists():
+#         # Show only ICT service reports for staff users in ict_user group
+#         report_list = Report.objects.filter(service_type='ict').order_by('item_creation_date').all()
+#         show_reports = True
+#     else:
+#         # For other users, show no reports
+#         report_list = Report.objects.none()
+
+#     # Handle search functionality
+#     search_term = request.GET.get('search_term')
+#     if search_term:
+#         report_list = report_list.filter(asset__asset_id__icontains=search_term)
+
+#     paginator = Paginator(report_list, 10)  # Show 10 reports per page
+#     page = request.GET.get('page')
+#     reports = paginator.get_page(page)
+
+#     # Calculate the range of pages to display
+#     num_pages = paginator.num_pages
+#     current_page = reports.number
+
+#     if num_pages <= 5:
+#         page_range = range(1, num_pages + 1)
+#     elif current_page <= 3:
+#         page_range = range(1, 6)
+#     elif current_page >= num_pages - 2:
+#         page_range = range(num_pages - 4, num_pages + 1)
+#     else:
+#         page_range = range(current_page - 2, current_page + 3)
+
+#     prev_page = reports.previous_page_number if reports.has_previous() else None
+#     next_page = reports.next_page_number if reports.has_next() else None
+
+#     context = {
+#         'category': category,
+#         'reports': reports,
+#         'search_term': search_term,
+#         'page_range': page_range,
+#         'prev_page': prev_page,
+#         'next_page': next_page,
+#         'show_reports': show_reports,
+#     }
+
+#     return render(request, 'report.html', context)
 
 
 
@@ -698,6 +765,49 @@ def print_qr(request):
     
     # Render the template with the QR codes and asset details
     return render(request, 'print_qr.html', {'qr_codes': qr_codes})
+
+
+# Export report as excel
+from django.http import HttpResponse
+from openpyxl import Workbook
+
+@login_required
+def export_report_as_excel(request):
+    # Fetch all report objects
+    reports = Report.objects.all()
+
+    # Create a new workbook and get the active worksheet
+    workbook = Workbook()
+    worksheet = workbook.active
+
+    # Define the headers
+    headers = ['Name', 'Email', 'Description', 'Asset ID', 'Service Type', 'Remark', 'Report Date']
+
+    # Write the headers to the worksheet
+    for col_num, header in enumerate(headers, 1):
+        cell = worksheet.cell(row=1, column=col_num)
+        cell.value = header
+
+    # Write the report data to the worksheet
+    for row_num, report in enumerate(reports, 2):
+        worksheet.cell(row=row_num, column=1).value = report.name
+        worksheet.cell(row=row_num, column=2).value = report.email
+        worksheet.cell(row=row_num, column=3).value = report.description
+        worksheet.cell(row=row_num, column=4).value = report.asset.asset_id
+        worksheet.cell(row=row_num, column=5).value = report.service_type
+        worksheet.cell(row=row_num, column=6).value = report.remark
+        worksheet.cell(row=row_num, column=7).value = report.item_creation_date.replace(tzinfo=None)
+
+    # Set the response headers for the Excel file
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=report.xlsx'
+
+    # Save the workbook to the response
+    workbook.save(response)
+
+    return response
+
+
 
 
 

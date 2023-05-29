@@ -24,6 +24,7 @@ class StateUserMiddleware:
             request.is_state_user = True  # Add the flag here
             if not request.path.startswith(reverse('backend:report')) and not request.path.startswith(
                     reverse('backend:report_remark')) and not request.path.startswith(
+                    reverse('backend:export_report_as_excel')) and not request.path.startswith(
                     reverse('backend:update_admin_profile')) and not request.path.startswith(reverse('backend:profile')):
                 if not request.path.startswith(reverse('backend:logout')):
                     return redirect('backend:report')

@@ -282,6 +282,17 @@ window.addEventListener('load', function () {
         </button>
       </div>
     </div> -->
+
+<div class="field">
+  <div class="control">
+    <button id="export-report-button" class="button green --jb-modal" type="button">
+      <a href="{% url 'backend:export_report_as_excel' %}">Export Report</a>
+    </button>
+  </div>
+</div>
+
+    
+    </div>
     
     <div class="card has-table">
       <header class="card-header">
@@ -305,7 +316,10 @@ window.addEventListener('load', function () {
                         <th>Description</th>
                         <th>Report Date</th>
                         <th>Remark</th>
-                        <th>Action</th>
+                        <!-- <th>Action</th> -->
+                        {% if not hide_action_column %}
+                        <th>Actions</th>
+                      {% endif %}
                       </tr>
                     </thead>
                     <tbody>
@@ -319,6 +333,8 @@ window.addEventListener('load', function () {
                             <td data-label="Description">{{ report.description }}</td>
                             <td data-label="Report Date">{{ report.item_creation_date }}</td>
                             <td data-label="Remark">{{ report.remark }}</td>
+                            {% if not hide_action_column %}
+
                             <td class="actions-cell">
                               <div class="buttons middle nowrap">
                                 <button class="button small blue --jb-modal" data-target="sample-modal-remark" data-asset-id="{{ report.asset.asset_id }}" data-asset-remark="{{ report.remark }}" type="button">
@@ -356,6 +372,7 @@ window.addEventListener('load', function () {
 
                 </div>
               </td>
+              {% endif %}
             </tr>
             {% endfor %}
             {% else %}
