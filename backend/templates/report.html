@@ -38,6 +38,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  animation: fadeInOut 3s linear infinite;
 }
 
 .preloader .loader {
@@ -69,11 +70,9 @@
   100% {
     opacity: 0;
   }
+
 }
 
-.preloader {
-  animation: fadeInOut 3s linear infinite;
-}
 
 
 </style>
@@ -82,7 +81,7 @@
 
 <body>
   <div id="app">
-    <div class="preloader">
+    <div class="preloader preloader-visible">
       <div class="loader"></div>
   </div>
 
@@ -292,7 +291,7 @@ window.addEventListener('load', function () {
 </div>
 
     
-    </div>
+    <!-- </div> -->
     
     <div class="card has-table">
       <header class="card-header">
