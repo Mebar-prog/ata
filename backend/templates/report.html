@@ -73,7 +73,19 @@
 
 }
 
+.asset-details {
+    padding: 1rem;
+    background-color: #f8f8f8;
+    border-radius: 5px;
+  }
 
+  .asset-details p {
+    margin-bottom: 0.5rem;
+  }
+
+  .asset-details strong {
+    font-weight: bold;
+  }
 
 </style>
 
@@ -473,55 +485,21 @@ window.addEventListener('load', function () {
 </div>
 
 <!-- report detials -->
- <div id="sample-modal-details" class="modal">
+<div id="sample-modal-details" class="modal">
   <div class="modal-background --jb-modal-close"></div>
   <div class="modal-card">
     <header class="modal-card-head">
       <p class="modal-card-title">Asset Details</p>
     </header>
     <section class="modal-card-body">
-      
-      <div class="field">
-        <label class="label">Asset ID</label>
-        <div class="control">
-          <input class="input" type="text" id="asset-id" readonly>
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Name</label>
-        <div class="control">
-          <input class="input" type="text" id="asset-name" readonly>
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Category</label>
-        <div class="control">
-          <input class="input" type="text" id="asset-category" readonly>
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Subcategory</label>
-        <div class="control">
-          <input class="input" type="text" id="asset-subcategory" readonly>
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Location</label>
-        <div class="control">
-          <input class="input" type="text" id="asset-location" readonly>
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Owner</label>
-        <div class="control">
-          <input class="input" type="text" id="asset-owner" readonly>
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Purchase Date</label>
-        <div class="control">
-          <input class="input" type="text" id="asset-purchase-date" readonly>
-        </div>
+      <div class="asset-details">
+        <p><strong>Asset ID:</strong> <span id="asset-id"></span></p>
+        <p><strong>Item Name:</strong> <span id="asset-name"></span></p>
+        <p><strong>Category:</strong> <span id="asset-category"></span></p>
+        <!-- <p><strong>Subcategory:</strong> <span id="asset-subcategory"></span></p> -->
+        <p><strong>Location:</strong> <span id="asset-location"></span></p>
+        <p><strong>Owner:</strong> <span id="asset-owner"></span></p>
+        <p><strong>Purchase Date:</strong> <span id="asset-purchase-date"></span></p>
       </div>
     </section>
     <footer class="modal-card-foot">
@@ -530,11 +508,6 @@ window.addEventListener('load', function () {
   </div>
 </div>
 
-
-
-<!-- end of asset_id -->
-
-
 </div>
 
 <!-- show asset details -->
@@ -542,31 +515,33 @@ window.addEventListener('load', function () {
   document.addEventListener('DOMContentLoaded', () => {
     const modalButtons = document.querySelectorAll('.--jb-modal');
     const modal = document.getElementById('sample-modal-details');
-    const assetIdInput = document.getElementById('asset-id');
-    const assetNameInput = document.getElementById('asset-name');
-    const assetCategoryInput = document.getElementById('asset-category');
-    const assetSubcategoryInput = document.getElementById('asset-subcategory');
-    const assetLocationInput = document.getElementById('asset-location');
-    const assetOwnerInput = document.getElementById('asset-owner');
-    const assetPurchaseDateInput = document.getElementById('asset-purchase-date');
+    
+    const assetIdSpan = document.getElementById('asset-id');
+    const assetNameSpan = document.getElementById('asset-name');
+    const assetCategorySpan = document.getElementById('asset-category');
+    // const assetSubcategorySpan = document.getElementById('asset-subcategory');
+    const assetLocationSpan = document.getElementById('asset-location');
+    const assetOwnerSpan = document.getElementById('asset-owner');
+    const assetPurchaseDateSpan = document.getElementById('asset-purchase-date');
+
 
     modalButtons.forEach(button => {  
       button.addEventListener('click', () => {
         const assetId = button.dataset.assetId;
         const assetName = button.dataset.assetName;
         const assetCategory = button.dataset.assetCategory;
-        const assetSubcategory = button.dataset.assetSubcategory;
+        // const assetSubcategory = button.dataset.assetSubcategory;
         const assetLocation = button.dataset.assetLocation;
         const assetOwner = button.dataset.assetOwner;
         const assetPurchaseDate = button.dataset.assetPurchaseDate;
 
-        assetIdInput.value = assetId;
-        assetNameInput.value = assetName;
-        assetCategoryInput.value = assetCategory;
-        assetSubcategoryInput.value = assetSubcategory;
-        assetLocationInput.value = assetLocation;
-        assetOwnerInput.value = assetOwner;
-        assetPurchaseDateInput.value = assetPurchaseDate;
+        assetIdSpan.innerHTML = assetId;
+        assetNameSpan.innerHTML = assetName;
+        assetCategorySpan.innerHTML = assetCategory;
+        // assetSubcategorySpan.innerHTML = assetSubcategory;
+        assetLocationSpan.innerHTML = assetLocation;
+        assetOwnerSpan.innerHTML = assetOwner;
+        assetPurchaseDateSpan.innerHTML = assetPurchaseDate;
 
         modal.classList.add('is-active');
       });

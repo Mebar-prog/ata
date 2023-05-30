@@ -14,11 +14,11 @@ from backend.forms import AssetUploadForm
 from datetime import datetime
 from openpyxl import load_workbook
 import os
-from openpyxl import Workbook
 from django.http import HttpResponse
 from django.conf import settings
 from django.http import FileResponse
 from openpyxl import Workbook
+
 
 # Create your views here.
 @login_required
@@ -503,7 +503,7 @@ def add_asset(request):
         name = request.POST['name']
         category_id = request.POST['category']
         category = AssetCategory.objects.get(id=category_id)
-        sub_category = request.POST['sub_category']
+        # sub_category = request.POST['sub_category']
         location = request.POST['location']
         owner = request.POST['owner']
         purchase_date = request.POST['purchase_date']
@@ -517,7 +517,7 @@ def add_asset(request):
             asset_id=asset_id,
             name=name,
             category=category,
-            sub_category=sub_category,
+            # sub_category=sub_category,
             location=location,
             owner=owner,
             purchase_date=purchase_date
@@ -540,7 +540,7 @@ def edit_asset(request):
         asset.name = request.POST['name']
         category_id = request.POST['category']
         asset.category = AssetCategory.objects.get(id=category_id)
-        asset.sub_category = request.POST['sub_category']
+        # asset.sub_category = request.POST['sub_category']
         asset.location = request.POST['location']
         asset.owner = request.POST['owner']
         asset.purchase_date = request.POST['purchase_date']
@@ -689,7 +689,6 @@ def upload_assets(request):
                         asset_id=asset_id,
                         name=row['name'],
                         category=asset_category,
-                        sub_category=row['sub_category'],
                         location=row['location'],
                         owner=row['owner'],
                         purchase_date=purchase_date
@@ -697,7 +696,7 @@ def upload_assets(request):
                     new_assets.append(asset)
 
             if duplicate_assets:
-                messages.warning(request, f"The following assets already exist")
+                messages.warning(request, "The following assets already exist: {}".format(", ".join(duplicate_assets)))
 
             if new_assets:
                 Asset.objects.bulk_create(new_assets)
@@ -711,6 +710,54 @@ def upload_assets(request):
             return redirect(reverse('backend:manageasset'))  # Display a success message
 
     return render(request, 'tables.html', {'form': form})
+# def upload_assets(request):
+#     form = AssetUploadForm()
+
+#     if request.method == 'POST':
+#         form = AssetUploadForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             file = form.cleaned_data['file']
+#             df = pd.read_excel(file)
+
+#             existing_asset_ids = Asset.objects.values_list('asset_id', flat=True)
+
+#             duplicate_assets = []
+#             new_assets = []
+
+#             for _, row in df.iterrows():
+#                 asset_id = row['asset_id']
+#                 if asset_id in existing_asset_ids:
+#                     duplicate_assets.append(asset_id)
+#                 else:
+#                     asset_category, _ = AssetCategory.objects.get_or_create(category_name=row['category'])
+#                     purchase_date_str = str(row['purchase_date'])
+#                     purchase_date = datetime.strptime(purchase_date_str, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
+#                     asset = Asset(
+#                         asset_id=asset_id,
+#                         name=row['name'],
+#                         category=asset_category,
+#                         sub_category=row['sub_category'],
+#                         location=row['location'],
+#                         owner=row['owner'],
+#                         purchase_date=purchase_date
+#                     )
+#                     new_assets.append(asset)
+
+#             if duplicate_assets:
+#                 messages.warning(request, f"The following assets already exist")
+
+#             if new_assets:
+#                 Asset.objects.bulk_create(new_assets)
+
+#                 # Generate QR code and save for each asset
+#                 for asset in new_assets:
+#                     asset.save()
+
+#                 messages.success(request, 'File Uploaded Successfully')
+
+#             return redirect(reverse('backend:manageasset'))  # Display a success message
+
+#     return render(request, 'tables.html', {'form': form})
 
 
 # export asset details in excel format
@@ -721,12 +768,12 @@ def export_to_excel(request):
     ws = wb.active
     
     # Write the headers for the Excel file
-    headers = ['asset_id', 'name', 'category', 'sub_category', 'location', 'owner', 'purchase_date']
+    headers = ['asset_id', 'name', 'category', 'location', 'owner', 'purchase_date']
     ws.append(headers)
     
     # Write the asset data to the Excel file
     assets = Asset.objects.all().values_list(
-        'asset_id', 'name', 'category__category_name', 'sub_category', 'location', 'owner', 'purchase_date'
+        'asset_id', 'name', 'category__category_name', 'location', 'owner', 'purchase_date'
     )
     for asset in assets:
         ws.append(asset)
@@ -745,6 +792,37 @@ def export_to_excel(request):
     else:
         return HttpResponse("File not found.")
     
+# @login_required
+# def export_to_excel(request):
+#     # Create a new Excel workbook and select the active worksheet
+#     wb = Workbook()
+#     ws = wb.active
+    
+#     # Write the headers for the Excel file
+#     headers = ['asset_id', 'name', 'category', 'sub_category', 'location', 'owner', 'purchase_date']
+#     ws.append(headers)
+    
+#     # Write the asset data to the Excel file
+#     assets = Asset.objects.all().values_list(
+#         'asset_id', 'name', 'category__category_name', 'sub_category', 'location', 'owner', 'purchase_date'
+#     )
+#     for asset in assets:
+#         ws.append(asset)
+    
+#     # Save the Excel file to a specific location
+#     file_path = os.path.join(settings.BASE_DIR, 'assets.xlsx')
+#     wb.save(file_path)
+    
+#     # Check if the file exists
+#     if os.path.exists(file_path):
+#         # Open the saved file for reading
+#         with open(file_path, 'rb') as file:
+#             response = HttpResponse(file.read(), content_type='application/vnd.ms-excel')
+#             response['Content-Disposition'] = 'attachment; filename=assets.xlsx'
+#         return response
+#     else:
+#         return HttpResponse("File not found.")
+    
 
 # print qr code in bulk
 @login_required
@@ -758,7 +836,7 @@ def print_qr(request):
             'asset_id': asset.asset_id,
             'name': asset.name,
             'category': asset.category.category_name,
-            'sub_category': asset.sub_category,
+            # 'sub_category': asset.sub_category,
             'location': asset.location,
             'owner': asset.owner,
         })
@@ -768,8 +846,6 @@ def print_qr(request):
 
 
 # Export report as excel
-from django.http import HttpResponse
-from openpyxl import Workbook
 
 @login_required
 def export_report_as_excel(request):

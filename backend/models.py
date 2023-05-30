@@ -17,7 +17,6 @@ class Asset(models.Model):
     asset_id = models.CharField(max_length=100, unique=True, primary_key=True)
     name = models.CharField(max_length=100)
     category = models.ForeignKey('AssetCategory', on_delete=models.CASCADE)
-    sub_category = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
     owner = models.CharField(max_length=100)
     purchase_date = models.DateField()

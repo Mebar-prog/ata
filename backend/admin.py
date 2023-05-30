@@ -2,9 +2,9 @@ from django.contrib import admin
 from backend.models import Asset, AssetCategory
 
 class AssetAdmin(admin.ModelAdmin):
-    list_display = ('asset_id', 'name', 'category', 'sub_category', 'location', 'owner', 'purchase_date','qr_code')
-    list_filter = ('category', 'sub_category', 'location', 'owner')
-    search_fields = ('asset_id', 'name', 'category__name', 'sub_category', 'location', 'owner')
+    list_display = ('asset_id', 'name', 'category', 'location', 'owner', 'purchase_date','qr_code')
+    list_filter = ('category','location', 'owner')
+    search_fields = ('asset_id', 'name', 'category__name','location', 'owner')
 
 admin.site.register(Asset, AssetAdmin)
 admin.site.register(AssetCategory)

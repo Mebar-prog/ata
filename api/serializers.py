@@ -11,8 +11,8 @@ class DormAmenitiesAssetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Asset
-        fields = ('asset_id', 'name', 'category', 'sub_category', 'location', 'owner',)
-        read_only_fields = ('asset_id', 'name', 'category', 'sub_category', 'location',)
+        fields = ('asset_id', 'name', 'category', 'location', 'owner',)
+        read_only_fields = ('asset_id', 'name', 'category', 'location',)
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
