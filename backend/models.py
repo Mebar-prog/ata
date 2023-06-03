@@ -3,6 +3,7 @@ import qrcode
 from io import BytesIO
 from django.core.files.base import ContentFile
 from django.utils import timezone
+from django.contrib.auth.models import User, Group
 
 # Create your models here. 
 class AssetCategory(models.Model):
@@ -21,6 +22,7 @@ class Asset(models.Model):
     owner = models.CharField(max_length=100)
     purchase_date = models.DateField()
     item_creation_date = models.DateTimeField(default=timezone.now)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.asset_id
@@ -64,17 +66,40 @@ class Asset(models.Model):
         # Call the parent class's save method
         super().save(*args, **kwargs)
 
+
+class InactiveAsset(models.Model):
+    asset = models.OneToOneField(Asset, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.asset.asset_id
+
 class Report(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField(max_length=100)
     description = models.TextField()
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
-    service_type = models.CharField(max_length=100, default='none')  # Add default='none'
+    service_type = models.CharField(max_length=100, default='none') 
     remark = models.TextField(blank=True, null=True)
     item_creation_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.name} - {self.asset.asset_id}'
+
+class ReportLog(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField(max_length=100)
+    description = models.TextField()
+    asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
+    service_type = models.CharField(max_length=100, default='none') 
+    remark = models.TextField(blank=True, null=True)
+    item_creation_date = models.DateTimeField()
+
+    completion_date = models.DateTimeField(auto_now_add=True)
+    completed_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+
+    def __str__(self):
+        return f'Report Log - {self.name} - {self.asset.asset_id}'
+
 
 
 

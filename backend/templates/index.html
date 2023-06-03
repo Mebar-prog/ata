@@ -162,8 +162,14 @@
       <ul class="menu-list">
         <li class="--set-active-tables-html">
           <a href="{% url 'backend:manageasset' %}">
-            <span class="icon"><i class="mdi mdi-table"></i></span>
+            <span class="icon"><i class="mdi mdi-table-edit"></i></span>
             <span class="menu-item-label">Manage Asset</span>
+          </a>
+        </li>
+        <li class="--set-active-tables-html">
+          <a href="{% url 'backend:inactive_assets' %}">
+            <span class="icon"><i class="mdi mdi-table"></i></span>
+            <span class="menu-item-label">Inactive Asset</span>
           </a>
         </li>
         <li class="--set-active-tables-html">
@@ -197,6 +203,13 @@
             <span class="icon"><i class="mdi mdi-alert-circle-outline"></i>
             </span>
             <span class="menu-item-label">View Report</span>
+          </a>
+        </li>
+        <li class="--set-active-tables-html">
+          <a href="{% url 'backend:report_log' %}">
+            <span class="icon"><i class="mdi mdi-history"></i>
+            </span>
+            <span class="menu-item-label">Report History</span>
           </a>
         </li>
         
@@ -254,9 +267,11 @@
                         {{ total_assets }}
                     </h1>
                 </div>
-                <span class="icon widget-icon text-green-500">
+                <span class="icon widget-icon text-blue-500">
                   <i class="mdi mdi-cube-outline mdi-48px"></i>
                 </span>
+               
+                
                 
                 
                 
@@ -277,7 +292,8 @@
                 {{ total_category }}
               </h1>
             </div>
-            <span class="icon widget-icon text-blue-500"><i class="mdi mdi-format-list-bulleted mdi-48px"></i>
+            <span class="icon widget-icon text-green-500">
+              <i class="mdi mdi-format-list-bulleted mdi-48px"></i>
             </span>
           </div>
         </div>

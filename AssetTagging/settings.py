@@ -81,6 +81,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'backend.middleware.StateUserMiddleware',
 
+    
+    
+
 ]
 
 ROOT_URLCONF = 'AssetTagging.urls'

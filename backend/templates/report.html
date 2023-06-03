@@ -179,8 +179,14 @@ window.addEventListener('load', function () {
       <ul class="menu-list">
         <li class="--set-active-tables-html">
           <a href="{% url 'backend:manageasset' %}">
-            <span class="icon"><i class="mdi mdi-table"></i></span>
+            <span class="icon"><i class="mdi mdi-table-edit"></i></span>
             <span class="menu-item-label">Manage Asset</span>
+          </a>
+        </li>
+        <li class="--set-active-tables-html">
+          <a href="{% url 'backend:inactive_assets' %}">
+            <span class="icon"><i class="mdi mdi-table"></i></span>
+            <span class="menu-item-label">Inactive Asset</span>
           </a>
         </li>
         <li class="--set-active-tables-html">
@@ -214,6 +220,13 @@ window.addEventListener('load', function () {
             <span class="icon"><i class="mdi mdi-alert-circle-outline"></i>
             </span>
             <span class="menu-item-label">View Report</span>
+          </a>
+        </li>
+        <li class="--set-active-tables-html">
+          <a href="{% url 'backend:report_log' %}">
+            <span class="icon"><i class="mdi mdi-history"></i>
+            </span>
+            <span class="menu-item-label">Report History</span>
           </a>
         </li>
         
@@ -327,7 +340,6 @@ window.addEventListener('load', function () {
                         <th>Description</th>
                         <th>Report Date</th>
                         <th>Remark</th>
-                        <!-- <th>Action</th> -->
                         {% if not hide_action_column %}
                         <th>Actions</th>
                       {% endif %}
@@ -355,6 +367,29 @@ window.addEventListener('load', function () {
                                 <button class="button small green --jb-modal" data-target="sample-modal-details" data-asset-id="{{ report.asset.asset_id }}" data-asset-name="{{ report.asset.name }}" data-asset-category="{{ report.asset.category.category_name }}" data-asset-subcategory="{{ report.asset.sub_category }}" data-asset-location="{{ report.asset.location }}" data-asset-owner="{{ report.asset.owner }}" data-asset-purchase-date="{{ report.asset.purchase_date }}" type="button">
                                   <span class="icon"><i class="mdi mdi-eye"></i></span>                  
                                 </button>
+
+                                <button class="button small red --jb-modal" data-target="sample-modal-log-{{ report.asset.asset_id }}" style="background-color: #e6922e;" type="button">
+                                  <span class="icon"><i class="mdi mdi-check-circle-outline"></i></span>
+                                </button>
+                  <!-- move to report log modal -->
+                  <div id="sample-modal-log-{{ report.asset.asset_id }}" class="modal">
+                    <div class="modal-background --jb-modal-close"></div>
+                    <div class="modal-card">
+                      <header class="modal-card-head">
+                        <p class="modal-card-title">Archive Finished Report</p>
+                      </header>
+                      <section class="modal-card-body">
+                        <p>Please proceed with removing the report sent by {{ report.name }} only if you have completed the service.</p>
+                      </section>
+                      <footer class="modal-card-foot">
+                        <button class="button --jb-modal-close">Cancel</button>
+                        <form action="{% url 'backend:move_report_to_log' report_id=report.id %}" method="POST" class="delete-form">
+                          {% csrf_token %}
+                          <button type="submit" class="button red">Done</button>
+                        </form>
+                      </footer>
+                    </div>
+                  </div>
                 
                                 <button class="button small red --jb-modal" data-target="sample-modal-del-{{ report.asset.asset_id }}" type="button">
                                   <span class="icon"><i class="mdi mdi-trash-can"></i></span>
@@ -371,16 +406,16 @@ window.addEventListener('load', function () {
                         </section>
                         <footer class="modal-card-foot">
                             <button class="button --jb-modal-close">Cancel</button>
-                            <form action="{% url 'backend:delete_report' report.asset.asset_id %}" method="POST" class="delete-form">
-                                {% csrf_token %}
-                                <button type="submit" class="button red">Delete</button>
-                            </form>
+                            <form action="{% url 'backend:delete_report' report_id=report.id %}" method="POST" class="delete-form">
+                              {% csrf_token %}
+                              <button type="submit" class="button red">Delete</button>
+                          </form>
                         </footer>
                     </div>
                 </div>
                 
                 <!-- end of del modal -->
-
+               
                 </div>
               </td>
               {% endif %}

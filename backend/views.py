@@ -2,7 +2,7 @@ from django.contrib.auth import logout
 from django.urls import reverse
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
-from backend.models import Asset,AssetCategory,Report
+from backend.models import Asset,AssetCategory,Report,InactiveAsset
 from django.core.mail import send_mail
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect, get_object_or_404
@@ -18,13 +18,18 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.http import FileResponse
 from openpyxl import Workbook
+import pytz
+from openpyxl import Workbook
+from openpyxl.styles import NamedStyle, Font, PatternFill
+from openpyxl.utils import get_column_letter
+from django.http import HttpResponse
 
 
 # Create your views here.
 @login_required
 def dashboard(request):
     assets = Asset.objects.order_by('-item_creation_date')[:5]
-    a = Asset.objects.all()
+    a = Asset.objects.filter(is_active=True)
     category = AssetCategory.objects.all()
     total_category = category.count()
     total_assets = a.count()
@@ -41,10 +46,13 @@ def dashboard(request):
 
 from django.db.models import Q
 
+# manage asset view
 @login_required
 def manageasset(request):
     search_term = request.GET.get('search_term')
-    assets = Asset.objects.order_by('-item_creation_date')
+    # assets = Asset.objects.order_by('-item_creation_date')
+    assets = Asset.objects.filter(is_active=True).order_by('-item_creation_date')
+
 
     if search_term:
         assets = assets.filter(Q(asset_id__icontains=search_term))
@@ -153,13 +161,12 @@ def edit_category(request):
 @login_required
 def category_table(request, category_id):
     category = AssetCategory.objects.get(id=category_id)
-    asset_list = Asset.objects.filter(category=category)
+    asset_list = Asset.objects.filter(category=category, is_active=True)  # Filter for active assets
 
     # search functionality
     search_term = request.GET.get('search_term')
     if search_term:
         asset_list = asset_list.filter(asset_id__icontains=search_term.lower())
-        
 
     paginator = Paginator(asset_list, 10)  # Show 10 assets per page
     page = request.GET.get('page')
@@ -187,8 +194,48 @@ def category_table(request, category_id):
         'category_name': category_name,
         'page_range': page_range,
     }
-    
+
     return render(request, 'category_table.html', context)
+
+# @login_required
+# def category_table(request, category_id):
+#     category = AssetCategory.objects.get(id=category_id)
+#     asset_list = Asset.objects.filter(category=category)
+
+#     # search functionality
+#     search_term = request.GET.get('search_term')
+#     if search_term:
+#         asset_list = asset_list.filter(asset_id__icontains=search_term.lower())
+        
+
+#     paginator = Paginator(asset_list, 10)  # Show 10 assets per page
+#     page = request.GET.get('page')
+#     assets = paginator.get_page(page)
+
+#     # Calculate the range of pages to display
+#     num_pages = paginator.num_pages
+#     current_page = assets.number
+
+#     if num_pages <= 5:
+#         page_range = range(1, num_pages + 1)
+#     elif current_page <= 3:
+#         page_range = range(1, 6)
+#     elif current_page >= num_pages - 2:
+#         page_range = range(num_pages - 4, num_pages + 1)
+#     else:
+#         page_range = range(current_page - 2, current_page + 3)
+
+#     category_name = category.category_name
+#     category = AssetCategory.objects.all()
+
+#     context = {
+#         'category': category,
+#         'assets': assets,
+#         'category_name': category_name,
+#         'page_range': page_range,
+#     }
+    
+#     return render(request, 'category_table.html', context)
 
 
 
@@ -345,14 +392,12 @@ def report_remark(request):
 @login_required
 def delete_report(request, report_id):
     if request.method == 'POST':
-        report = get_object_or_404(Report, asset__asset_id=report_id)
+        report = get_object_or_404(Report, id=report_id)
         report.delete()
 
         messages.success(request, 'Report deleted successfully')
         return redirect('backend:report')
-
-
-
+    
 
 # logout view
 @login_required
@@ -545,13 +590,66 @@ def edit_asset(request):
         asset.owner = request.POST['owner']
         asset.purchase_date = request.POST['purchase_date']
         asset.save()
-        
+
         messages.success(request, 'Asset updated successfully')
-        return redirect(reverse('backend:manageasset'))
-    
+
+        source_page = request.POST['source_page']
+        if source_page == 'inactive':
+            return redirect(reverse('backend:inactive_assets'))
+        elif source_page == 'active':
+            return redirect(reverse('backend:manageasset'))
+        else:
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        
+
     return render(request, 'tables.html')
 
+# @login_required
+# def edit_asset(request):
+#     if request.method == 'POST':
+#         asset_id = request.POST['asset_id']
+#         asset = Asset.objects.get(asset_id=asset_id)
+#         asset.name = request.POST['name']
+#         category_id = request.POST['category']
+#         asset.category = AssetCategory.objects.get(id=category_id)
+#         # asset.sub_category = request.POST['sub_category']
+#         asset.location = request.POST['location']
+#         asset.owner = request.POST['owner']
+#         asset.purchase_date = request.POST['purchase_date']
+#         asset.save()
+        
+#         messages.success(request, 'Asset updated successfully')
+#         return redirect(reverse('backend:manageasset'))
+    
+#     return render(request, 'tables.html')
 
+
+# deactivate
+@login_required
+def transfer_asset(request, asset_id):
+    asset = get_object_or_404(Asset, asset_id=asset_id)
+    inactive_asset = InactiveAsset(asset=asset)
+    inactive_asset.save()
+    asset.is_active = False
+    asset.save()
+
+    messages.success(request, 'Asset has been removed from active listing.')
+
+    # Redirect back to the current page
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+# @login_required
+# def transfer_asset(request, asset_id):
+#     asset = get_object_or_404(Asset, asset_id=asset_id)
+#     inactive_asset = InactiveAsset(asset=asset)
+#     inactive_asset.save()
+#     asset.is_active = False
+#     asset.save()
+
+#     messages.success(request, 'Asset has been removed from active listing.')
+#     return redirect('backend:manageasset')
+
+
+from django.http import HttpResponseRedirect
 # delete asset
 @login_required 
 def delete_asset(request, asset_id):
@@ -559,19 +657,23 @@ def delete_asset(request, asset_id):
     asset.delete()
     
     messages.success(request, 'Asset deleted successfully')
-    return redirect(reverse('backend:manageasset'))
-
-# def delete_asset(request,asset_id):
-#     asset_id = request.POST.get('asset_id')
-#     asset = Asset.objects.get(id=asset_id)
-#     asset.delete()
-#     return redirect(reverse('backend:manageasset'))
-
-# #delete asset 
+    
+    # Get the 'next' parameter from the request's POST data
+    next_url = request.POST.get('next')
+    
+    # Redirect the user to the 'next' URL if it exists, otherwise redirect to a default URL
+    if next_url:
+        return HttpResponseRedirect(next_url)
+    else:
+        return redirect(reverse('backend:manageasset'))
+# @login_required 
 # def delete_asset(request, asset_id):
 #     asset = get_object_or_404(Asset, asset_id=asset_id)
 #     asset.delete()
+    
+#     messages.success(request, 'Asset deleted successfully')
 #     return redirect(reverse('backend:manageasset'))
+
 
 # view of report of faulty asset
 def save_report(request):
@@ -696,7 +798,7 @@ def upload_assets(request):
                     new_assets.append(asset)
 
             if duplicate_assets:
-                messages.warning(request, "The following assets already exist: {}".format(", ".join(duplicate_assets)))
+                messages.warning(request, "The following assets already exist")
 
             if new_assets:
                 Asset.objects.bulk_create(new_assets)
@@ -707,7 +809,7 @@ def upload_assets(request):
 
                 messages.success(request, 'File Uploaded Successfully')
 
-            return redirect(reverse('backend:manageasset'))  # Display a success message
+            return redirect(reverse('backend:manageasset'))  
 
     return render(request, 'tables.html', {'form': form})
 # def upload_assets(request):
@@ -771,10 +873,12 @@ def export_to_excel(request):
     headers = ['asset_id', 'name', 'category', 'location', 'owner', 'purchase_date']
     ws.append(headers)
     
-    # Write the asset data to the Excel file
-    assets = Asset.objects.all().values_list(
+    # Get the active assets
+    assets = Asset.objects.filter(is_active=True).values_list(
         'asset_id', 'name', 'category__category_name', 'location', 'owner', 'purchase_date'
     )
+    
+    # Write the asset data to the Excel file
     for asset in assets:
         ws.append(asset)
     
@@ -791,6 +895,37 @@ def export_to_excel(request):
         return response
     else:
         return HttpResponse("File not found.")
+
+# @login_required
+# def export_to_excel(request):
+#     # Create a new Excel workbook and select the active worksheet
+#     wb = Workbook()
+#     ws = wb.active
+    
+#     # Write the headers for the Excel file
+#     headers = ['asset_id', 'name', 'category', 'location', 'owner', 'purchase_date']
+#     ws.append(headers)
+    
+#     # Write the asset data to the Excel file
+#     assets = Asset.objects.all().values_list(
+#         'asset_id', 'name', 'category__category_name', 'location', 'owner', 'purchase_date'
+#     )
+#     for asset in assets:
+#         ws.append(asset)
+    
+#     # Save the Excel file to a specific location
+#     file_path = os.path.join(settings.BASE_DIR, 'assets.xlsx')
+#     wb.save(file_path)
+    
+#     # Check if the file exists
+#     if os.path.exists(file_path):
+#         # Open the saved file for reading
+#         with open(file_path, 'rb') as file:
+#             response = HttpResponse(file.read(), content_type='application/vnd.ms-excel')
+#             response['Content-Disposition'] = 'attachment; filename=assets.xlsx'
+#         return response
+#     else:
+#         return HttpResponse("File not found.")
     
 # @login_required
 # def export_to_excel(request):
@@ -827,7 +962,7 @@ def export_to_excel(request):
 # print qr code in bulk
 @login_required
 def print_qr(request):
-    assets = Asset.objects.all()
+    assets = Asset.objects.filter(is_active=True)
     qr_codes = []
     for asset in assets:
         # Append the QR code and asset details to the list
@@ -883,9 +1018,276 @@ def export_report_as_excel(request):
 
     return response
 
+# inactive asset view
+from django.db.models import Q
+from django.shortcuts import render
+from backend.models import Asset
+
+@login_required
+def inactive_assets(request):
+    search_term = request.GET.get('search_term')
+    inactive_assets = Asset.objects.filter(is_active=False).order_by('-item_creation_date')
+
+    if search_term:
+        inactive_assets = inactive_assets.filter(Q(asset_id__icontains=search_term))
+
+    paginator = Paginator(inactive_assets, 10)  # Show 10 inactive assets per page
+
+    page = request.GET.get('page')
+    try:
+        inactive_assets = paginator.page(page)
+    except PageNotAnInteger:
+        inactive_assets = paginator.page(1)
+    except EmptyPage:
+        inactive_assets = paginator.page(paginator.num_pages)
+
+    num_pages = paginator.num_pages
+    current_page = inactive_assets.number
+
+    if num_pages <= 5:
+        page_range = range(1, num_pages + 1)
+    elif current_page <= 3:
+        page_range = range(1, 6)
+    elif current_page >= num_pages - 2:
+        page_range = range(num_pages - 4, num_pages + 1)
+    else:
+        page_range = range(current_page - 2, current_page + 3)
+
+    context = {
+        'inactive_assets': inactive_assets,
+        'page_range': page_range,
+        'category': AssetCategory.objects.all(),
+        'search_term': search_term,
+    }
+
+    return render(request, 'inactive.html', context)
+
+# activate asset:
+@login_required
+def activate_asset(request, asset_id):
+    asset = get_object_or_404(Asset, asset_id=asset_id)
+    
+    try:
+        inactive_asset = InactiveAsset.objects.get(asset=asset)
+        inactive_asset.delete()  # Remove the asset from the inactive assets
+    except InactiveAsset.DoesNotExist:
+        pass  # No inactive asset exists for the given asset
+
+    # Set is_active to True
+    asset.is_active = True  
+    asset.save()
+
+    messages.success(request, 'Asset has been activated.')
+
+    # Perform any additional actions or redirects as needed
+    return redirect('backend:inactive_assets')
 
 
+#export inactive asset as excel:
+@login_required
+def export_inactive_to_excel(request):
+    # Create a new Excel workbook and select the active worksheet
+    wb = Workbook()
+    ws = wb.active
 
+    # Write the headers for the Excel file
+    headers = ['asset_id', 'name', 'category', 'location', 'owner', 'purchase_date']
+    ws.append(headers)
+
+    # Write the inactive asset data to the Excel file
+    inactive_assets = Asset.objects.filter(is_active=False).values_list(
+        'asset_id', 'name', 'category__category_name', 'location', 'owner', 'purchase_date'
+    )
+    for asset in inactive_assets:
+        ws.append(asset)
+
+    # Save the Excel file to a specific location
+    file_path = os.path.join(settings.BASE_DIR, 'inactive_assets.xlsx')
+    wb.save(file_path)
+
+    # Check if the file exists
+    if os.path.exists(file_path):
+        # Open the saved file for reading
+        with open(file_path, 'rb') as file:
+            response = HttpResponse(file.read(), content_type='application/vnd.ms-excel')
+            response['Content-Disposition'] = 'attachment; filename=inactive_assets.xlsx'
+        return response
+    else:
+        return HttpResponse("File not found.")
+
+
+# move report to report log after service is done
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect
+from backend.models import Report, ReportLog
+
+@login_required
+def move_report_to_log(request, report_id):
+    report = get_object_or_404(Report, id=report_id)
+
+    # Create a new ReportLog instance with all the report details
+    report_log = ReportLog(
+        name=report.name,
+        email=report.email,
+        description=report.description,
+        asset=report.asset,
+        service_type=report.service_type,
+        remark=report.remark,
+        item_creation_date=report.item_creation_date,
+        completion_date=report.item_creation_date,
+        completed_by=request.user
+    )
+    report_log.save()
+
+    # Delete the original report
+    report.delete()
+
+    messages.success(request, 'Report has beeen saved to logs.')
+    return redirect('backend:report')
+
+
+# report log view 
+@login_required
+def report_log(request):
+    category = AssetCategory.objects.all()
+    user = request.user
+    show_reports = False
+    hide_action_column = False  # Flag to determine if the action column should be hidden
+
+    if user.is_superuser and user.is_staff:
+        # Show all report logs for superadmin and staff users
+        report_log_list = ReportLog.objects.order_by('completion_date').all()
+        show_reports = True
+    elif user.is_staff and not user.groups.exists():
+        # Show all report logs for staff users who are not in any group
+        report_log_list = ReportLog.objects.order_by('completion_date').all()
+        show_reports = True
+        hide_action_column = True  # Hide the action column for these users
+    # elif user.groups.filter(name='state_user').exists():
+    #     # Show only estate service report logs for staff users in state_user group
+    #     report_log_list = ReportLog.objects.order_by('completion_date').all()
+    #     show_reports = True
+    elif user.groups.filter(name='state_user').exists():
+    # Show only estate service report logs for staff users in state_user group
+        report_log_list = ReportLog.objects.filter(service_type='estate')
+        show_reports = True
+
+    # elif user.groups.filter(name='ict_user').exists():
+    #     # Show only ICT service report logs for staff users in ict_user group
+    #     report_log_list = ReportLog.objects.order_by('completion_date').all()
+    #     show_reports = True
+
+    elif user.groups.filter(name='ict_user').exists():
+    # Show only ICT service report logs for staff users in ict_user group
+        report_log_list = ReportLog.objects.filter(service_type='ict')
+        show_reports = True
+
+    else:
+        # For other users, show no report logs
+        report_log_list = ReportLog.objects.none()
+
+    # Handle search functionality
+    search_term = request.GET.get('search_term')
+    if search_term:
+        report_log_list = report_log_list.filter(asset__asset_id__icontains=search_term)
+
+    paginator = Paginator(report_log_list, 10)  # Show 10 report logs per page
+    page = request.GET.get('page')
+    report_logs = paginator.get_page(page)
+
+    # Calculate the range of pages to display
+    num_pages = paginator.num_pages
+    current_page = report_logs.number
+
+    if num_pages <= 5:
+        page_range = range(1, num_pages + 1)
+    elif current_page <= 3:
+        page_range = range(1, 6)
+    elif current_page >= num_pages - 2:
+        page_range = range(num_pages - 4, num_pages + 1)
+    else:
+        page_range = range(current_page - 2, current_page + 3)
+
+    prev_page = report_logs.previous_page_number if report_logs.has_previous() else None
+    next_page = report_logs.next_page_number if report_logs.has_next() else None
+
+    context = {
+        'category': category,
+        'report_logs': report_logs,
+        'search_term': search_term,
+        'page_range': page_range,
+        'prev_page': prev_page,
+        'next_page': next_page,
+        'show_reports': show_reports,
+        'hide_action_column': hide_action_column, 
+    }
+    return render(request, 'report_log.html', context)
+
+
+@login_required
+def delete_log(request, report_log_id):
+    if request.method == 'POST':
+        reportLog = get_object_or_404(ReportLog, id=report_log_id)
+        reportLog.delete()
+
+        messages.success(request, 'Report Log deleted successfully')
+        return redirect('backend:report_log')
+
+
+#export report log to excel
+@login_required
+def export_report_log_as_excel(request):
+    # Create a new Excel workbook and select the active worksheet
+    wb = Workbook()
+    ws = wb.active
+
+    # Define cell styles
+    date_format = NamedStyle(name='date_format')
+    date_format.number_format = 'dd/mm/yyyy'
+    bold_font = Font(bold=True)
+    header_fill = PatternFill(start_color='D3D3D3', end_color='D3D3D3', fill_type='solid')
+
+    # Write the headers for the Excel file
+    headers = ['Asset ID', 'Name', 'Email', 'Description', 'Report Date', 'Remark', 'Completed By', 'Date of Completion']
+    for col_num, header in enumerate(headers, 1):
+        col_letter = get_column_letter(col_num)
+        ws[col_letter + '1'] = header
+        ws[col_letter + '1'].font = bold_font
+        ws[col_letter + '1'].fill = header_fill
+        ws.column_dimensions[col_letter].width = 15
+
+    # Write the report log data to the Excel file
+    report_logs = ReportLog.objects.all().values_list(
+        'asset__asset_id', 'name', 'email', 'description', 'item_creation_date', 'remark', 'completed_by', 'completion_date'
+    )
+    for row_num, log in enumerate(report_logs, 2):
+        for col_num, field in enumerate(log, 1):
+            col_letter = get_column_letter(col_num)
+            # Apply cell style to date fields
+            if isinstance(field, datetime):
+                field = field.astimezone(pytz.timezone('UTC')).replace(tzinfo=None)
+                ws[col_letter + str(row_num)].style = date_format
+            # Convert completed_by user ID to actual name
+            if col_num == 7:  # Column index of 'Completed By'
+                completed_by_id = field
+                completed_by_name = User.objects.get(id=completed_by_id).username
+                ws[col_letter + str(row_num)] = completed_by_name
+            else:
+                ws[col_letter + str(row_num)] = field
+
+    # Save the Excel file to a specific location
+    file_path = os.path.join(settings.BASE_DIR, 'report_logs.xlsx')
+    wb.save(file_path)
+
+    # Check if the file exists
+    if os.path.exists(file_path):
+        # Open the saved file for reading
+        with open(file_path, 'rb') as file:
+            response = HttpResponse(file.read(), content_type='application/vnd.ms-excel')
+            response['Content-Disposition'] = 'attachment; filename=report_logs.xlsx'
+        return response
+    else:
+        return HttpResponse("File not found.")
 
 
 

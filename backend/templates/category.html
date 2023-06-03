@@ -160,8 +160,14 @@
       <ul class="menu-list">
         <li class="--set-active-tables-html">
           <a href="{% url 'backend:manageasset' %}">
-            <span class="icon"><i class="mdi mdi-table"></i></span>
+            <span class="icon"><i class="mdi mdi-table-edit"></i></span>
             <span class="menu-item-label">Manage Asset</span>
+          </a>
+        </li>
+        <li class="--set-active-tables-html">
+          <a href="{% url 'backend:inactive_assets' %}">
+            <span class="icon"><i class="mdi mdi-table"></i></span>
+            <span class="menu-item-label">Inactive Asset</span>
           </a>
         </li>
         <li class="active">
@@ -204,6 +210,13 @@
             <span class="icon"><i class="mdi mdi-alert-circle-outline"></i>
             </span>
             <span class="menu-item-label">View Report</span>
+          </a>
+        </li>
+        <li class="--set-active-tables-html">
+          <a href="{% url 'backend:report_log' %}">
+            <span class="icon"><i class="mdi mdi-history"></i>
+            </span>
+            <span class="menu-item-label">Report History</span>
           </a>
         </li>
         

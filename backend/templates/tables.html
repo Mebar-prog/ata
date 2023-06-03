@@ -169,8 +169,14 @@
       <ul class="menu-list">
         <li class="active">
           <a href="{% url 'backend:manageasset' %}">
-            <span class="icon"><i class="mdi mdi-table"></i></span>
+            <span class="icon"><i class="mdi mdi-table-edit"></i></span>
             <span class="menu-item-label">Manage Asset</span>
+          </a>
+        </li>
+        <li class="--set-active-tables-html">
+          <a href="{% url 'backend:inactive_assets' %}">
+            <span class="icon"><i class="mdi mdi-table"></i></span>
+            <span class="menu-item-label">Inactive Asset</span>
           </a>
         </li>
         <li class="--set-active-tables-html">
@@ -213,6 +219,13 @@
             <span class="icon"><i class="mdi mdi-alert-circle-outline"></i>
             </span>
             <span class="menu-item-label">View Report</span>
+          </a>
+        </li>
+        <li class="--set-active-tables-html">
+          <a href="{% url 'backend:report_log' %}">
+            <span class="icon"><i class="mdi mdi-history"></i>
+            </span>
+            <span class="menu-item-label">Report History</span>
           </a>
         </li>
         
@@ -324,7 +337,6 @@
               <th>Asset Id</th>
               <th>Item Name</th>
               <th>Category</th>
-              <!-- <th>Sub-Category</th> -->
               <th>Location</th>
               <th>Owner</th>
               <th>Purchase Date</th>
@@ -352,17 +364,40 @@
                 <td data-label="Date">{{ asset.purchase_date }}</td>
                 <td class="actions-cell">
                   <div class="buttons center nowrap">
-                    <button class="button small blue" onclick="printQR('{{ asset.qr_code.url }}')" type="button">
+                   
+                    <button class="button small blue" onclick="printQR('{{ asset.qr_code.url }}', '{{ asset.asset_id }}', '{{ asset.name }}', '{{ asset.category.category_name }}')" type="button">
                       <span class="icon"><i class="mdi mdi-printer"></i></span>
                     </button>
+
                     <button class="button small green --jb-modal" data-target="sample-modal" data-asset-id="{{ asset.asset_id }}" data-asset-name="{{ asset.name }}" data-asset-category="{{ asset.category.pk }}" data-asset-location="{{ asset.location }}" data-asset-owner="{{ asset.owner }}" data-asset-purchase-date="{{ asset.purchase_date }}" type="button">
                       <span class="icon"><i class="mdi mdi-pencil"></i></span>
                     </button>
-                    <button class="button small red --jb-modal" data-target="sample-modal-{{ asset.asset_id }}" type="button">
+                    <button class="button small orange --jb-modal" data-target="sample-modal-{{ asset.asset_id }}" type="button">
+                      <span class="icon"><i class="mdi mdi-toggle-switch-off"></i></span>
+                    </button>
+                     <!-- remove asset from the table modal to inactive table -->
+                     <div id="sample-modal-{{ asset.asset_id }}" class="modal">
+                      <div class="modal-background --jb-modal-close"></div>
+                      <div class="modal-card">
+                          <header class="modal-card-head">
+                              <p class="modal-card-title">Remove Asset</p>
+                          </header>
+                          <section class="modal-card-body">
+                              <p>Are you sure you want to make {{ asset.name }} status inactive?</p>
+                          </section>
+                          <footer class="modal-card-foot">
+                              <button class="button --jb-modal-close">Cancel</button>
+                              <form action="{% url 'backend:transfer_asset' asset.asset_id %}" method="POST" class="delete-form">
+                                {% csrf_token %}
+                                  <button type="submit" class="button red">Make Inactive</button>
+                              </form>
+                          </footer>
+                      </div>
+                    </div>
+                    <button class="button small red --jb-modal" data-target="sample-modal-delete-{{ asset.asset_id }}" type="button">
                       <span class="icon"><i class="mdi mdi-trash-can"></i></span>
                     </button>
-                     <!-- delete asset from the table modal -->
-                     <div id="sample-modal-{{ asset.asset_id }}" class="modal">
+                    <div id="sample-modal-delete-{{ asset.asset_id }}" class="modal">
                       <div class="modal-background --jb-modal-close"></div>
                       <div class="modal-card">
                           <header class="modal-card-head">
@@ -374,7 +409,9 @@
                           <footer class="modal-card-foot">
                               <button class="button --jb-modal-close">Cancel</button>
                               <form action="{% url 'backend:delete_asset' asset.asset_id %}" method="POST" class="delete-form">
-                                  {% csrf_token %}
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.path }}">
+
                                   <button type="submit" class="button red">Delete</button>
                               </form>
                           </footer>
@@ -407,7 +444,7 @@
                 <td class="actions-cell">
                   <div class="buttons center nowrap">
                    
-                    <button class="button small blue" onclick="printQR('{{ asset.qr_code.url }}')" type="button">
+                    <button class="button small blue" onclick="printQR('{{ asset.qr_code.url }}', '{{ asset.asset_id }}', '{{ asset.name }}', '{{ asset.category.category_name }}')" type="button">
                       <span class="icon"><i class="mdi mdi-printer"></i></span>
                     </button>
                     
@@ -416,11 +453,35 @@
                       <span class="icon"><i class="mdi mdi-pencil"></i></span>
                     </button>
                    
-                    <button class="button small red --jb-modal" data-target="sample-modal-{{ asset.asset_id }}" type="button">
-                      <span class="icon"><i class="mdi mdi-trash-can"></i></span>
+                    <button class="button small red  --jb-modal" style="background-color: #e6922e;" data-target="sample-modal-{{ asset.asset_id }}" type="button">
+                      <span class="icon"><i class="mdi mdi-toggle-switch-off"></i></span>
+
                     </button>
+                    
+                    
                     <!-- delete asset from the table modal -->
                       <div id="sample-modal-{{ asset.asset_id }}" class="modal">
+                        <div class="modal-background --jb-modal-close"></div>
+                        <div class="modal-card">
+                            <header class="modal-card-head">
+                                <p class="modal-card-title">Remove Asset</p>
+                            </header>
+                            <section class="modal-card-body">
+                                <p>Are you sure you want to make {{ asset.name }} status inactive?</p>
+                            </section>
+                            <footer class="modal-card-foot">
+                                <button class="button --jb-modal-close">Cancel</button>
+                                <form action="{% url 'backend:transfer_asset' asset.asset_id %}" method="POST" class="delete-form">
+                                  {% csrf_token %}
+                                    <button type="submit" class="button red">Make Inactive</button>
+                                </form>
+                            </footer>
+                        </div>
+                      </div>
+                      <button class="button small red --jb-modal" data-target="sample-modal-delete-{{ asset.asset_id }}" type="button">
+                        <span class="icon"><i class="mdi mdi-trash-can"></i></span>
+                      </button>
+                      <div id="sample-modal-delete-{{ asset.asset_id }}" class="modal">
                         <div class="modal-background --jb-modal-close"></div>
                         <div class="modal-card">
                             <header class="modal-card-head">
@@ -432,7 +493,9 @@
                             <footer class="modal-card-foot">
                                 <button class="button --jb-modal-close">Cancel</button>
                                 <form action="{% url 'backend:delete_asset' asset.asset_id %}" method="POST" class="delete-form">
-                                    {% csrf_token %}
+                                  {% csrf_token %}
+                                  <input type="hidden" name="next" value="{{ request.path }}">
+
                                     <button type="submit" class="button red">Delete</button>
                                 </form>
                             </footer>
@@ -528,6 +591,7 @@
       <form method="POST" enctype="multipart/form-data" action="{% url 'backend:edit_asset' %}">
 
         {% csrf_token %}
+        <input type="hidden" name="source_page" value="active">
         <div class="field">
           <label class="label">Asset Id</label>
           <div class="control">
@@ -692,13 +756,26 @@
 </div>
 <!-- print qr code individually -->
 <script>
+  function printQR(qrCodeUrl, assetId, assetName, assetCategory) {
+    var printWindow = window.open(qrCodeUrl);
+    printWindow.document.write('<html><head><style>@media print { img { width: 5cm; height: 5cm; } }</style></head><body>');
+    printWindow.document.write('<div>Asset ID: ' + assetId + '</div>');
+    printWindow.document.write('<div>Name: ' + assetName + '</div>');
+    printWindow.document.write('<div>Category: ' + assetCategory + '</div>');
+    printWindow.document.write('<img src="' + qrCodeUrl + '">');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+  }
+</script>
+<!-- <script>
   function printQR(qrCodeUrl) {
     var printWindow = window.open(qrCodeUrl);
     printWindow.document.write('<html><head><style>@media print { img { width: 5cm; height: 5cm; } }</style></head><body><img src="' + qrCodeUrl + '"></body></html>');
     printWindow.document.close();
     printWindow.print();
   }
-</script>
+</script> -->
 <!-- <script>
   function printQR(qrCodeUrl) {
     var printWindow = window.open(qrCodeUrl);
