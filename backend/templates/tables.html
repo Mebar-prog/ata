@@ -309,7 +309,7 @@
         </button>
         <button id="add-user-button" class="button green --jb-modal" data-target="sample-modal-4" type="button">
           <a href="{% url 'backend:print_qr' %}">Print QR</a>
-        </button>
+        </button> 
         
         
         <button id="add-user-button" class="button green --jb-modal" data-target="" type="button">
@@ -661,7 +661,7 @@
         <div class="field">
           <label class="label">Choose Excel File:</label>
           <div class="control">
-            <input type="file" name="file" accept=".xlsx, .xls">
+            <input type="file" name="file" accept=".xlsx, .xls" required>
           </div>
         </div>
       </section>
@@ -673,7 +673,8 @@
   </div>
 </div>
 
-<!-- export asset table asexcel file -->
+
+
 
 <!-- add asset individually modal -->
 <div id="sample-modal-2" class="modal">
@@ -719,14 +720,14 @@
         <div class="field">
           <label class="label">Location</label>
           <div class="control">
-            <input class="input" type="text" name="location" placeholder="Enter asset location" required>
+            <input class="input" type="text" name="location" placeholder="Enter asset location">
           </div>
         </div>
 
         <div class="field">
           <label class="label">Owner</label>
           <div class="control">
-            <input class="input" type="text" name="owner" placeholder="Enter asset owner" required>
+            <input class="input" type="text" name="owner" placeholder="Enter asset owner">
           </div>
         </div>
 
@@ -754,6 +755,8 @@
 
 
 </div>
+
+
 <!-- print qr code individually -->
 <script>
   function printQR(qrCodeUrl, assetId, assetName, assetCategory) {

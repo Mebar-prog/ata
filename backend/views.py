@@ -812,54 +812,7 @@ def upload_assets(request):
             return redirect(reverse('backend:manageasset'))  
 
     return render(request, 'tables.html', {'form': form})
-# def upload_assets(request):
-#     form = AssetUploadForm()
 
-#     if request.method == 'POST':
-#         form = AssetUploadForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             file = form.cleaned_data['file']
-#             df = pd.read_excel(file)
-
-#             existing_asset_ids = Asset.objects.values_list('asset_id', flat=True)
-
-#             duplicate_assets = []
-#             new_assets = []
-
-#             for _, row in df.iterrows():
-#                 asset_id = row['asset_id']
-#                 if asset_id in existing_asset_ids:
-#                     duplicate_assets.append(asset_id)
-#                 else:
-#                     asset_category, _ = AssetCategory.objects.get_or_create(category_name=row['category'])
-#                     purchase_date_str = str(row['purchase_date'])
-#                     purchase_date = datetime.strptime(purchase_date_str, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
-#                     asset = Asset(
-#                         asset_id=asset_id,
-#                         name=row['name'],
-#                         category=asset_category,
-#                         sub_category=row['sub_category'],
-#                         location=row['location'],
-#                         owner=row['owner'],
-#                         purchase_date=purchase_date
-#                     )
-#                     new_assets.append(asset)
-
-#             if duplicate_assets:
-#                 messages.warning(request, f"The following assets already exist")
-
-#             if new_assets:
-#                 Asset.objects.bulk_create(new_assets)
-
-#                 # Generate QR code and save for each asset
-#                 for asset in new_assets:
-#                     asset.save()
-
-#                 messages.success(request, 'File Uploaded Successfully')
-
-#             return redirect(reverse('backend:manageasset'))  # Display a success message
-
-#     return render(request, 'tables.html', {'form': form})
 
 
 # export asset details in excel format
