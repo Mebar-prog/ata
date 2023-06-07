@@ -7,13 +7,7 @@ import random
 
 # Create your views here.
 def index(request):
-    return render(request, 'index-3.html')
-
-def about(request):
-    return render(request, 'about.html')
-
-def contact(request):
-    return render(request, 'contact.html')
+    return render(request, 'report_success.html')
 
 
 def report_error(request):
@@ -52,5 +46,4 @@ def asset_details(request, asset_id):
 def forgot_password(request):
     return render(request, 'password_reset.html')
 
-from django.contrib.auth.models import User, Group
 

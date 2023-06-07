@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Report Sent</title>
+  <style>
+    body {
+      background-color: #f2f2f2;
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    
+    .container {
+      text-align: center;
+    }
+    
+    h1 {
+      font-size: 36px;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    
+    .success-message {
+      font-size: 24px;
+      color: #4caf50;
+      margin-bottom: 10px;
+      animation: fade-in 2s ease-in-out;
+    }
+    
+    @keyframes fade-in {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    
+    .subtext {
+      font-size: 18px;
+      color: #666;
+      animation: slide-in 2s ease-in-out;
+    }
+    
+    @keyframes slide-in {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Mobile Responsive Styles */
+    @media (max-width: 768px) {
+      body {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 28px;
+        margin-bottom: 10px;
+      }
+
+      .success-message {
+        font-size: 200px; /* Increase the font size as desired */
+      }
+
+      .subtext {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Your Report has been Sent</h1>
+    <div class="success-message">Success!</div>
+    <div class="subtext">Thank you for submitting your report.</div>
+  </div>
+</body>
+</html>

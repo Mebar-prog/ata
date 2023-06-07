@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'frontend',
     'backend',
+    'api',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,9 +48,27 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'widget_tweaks',
-    'cloudinary_storage'
+    'cloudinary_storage',
+    'cloudinary',
+    'rest_framework',
+    'django_filters',
+    'rest_framework.authtoken',
 
 ]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ],
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -61,6 +80,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'backend.middleware.StateUserMiddleware',
+
+    
+    
 
 ]
 
@@ -84,6 +106,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'AssetTagging.wsgi.application'
 
+# session expiration time
+SESSION_COOKIE_AGE = 3600  # 1 hour in seconds
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -155,14 +179,21 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'daec0esmt',
-    'API_KEY': '286856359452878',
-    'API_SECRET': 'XmiZTq8-3p-Yp7mD6t-W1ZOzOBo'
+    'CLOUD_NAME': 'dt4zsli8q',
+    'API_KEY': '711267198856194',
+    'API_SECRET': '0w6oN_9elcEHVJE5IWXcBAtenug'
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
+# CLOUDINARY_STORAGE = {
+#     'CLOUD_NAME': 'daec0esmt',
+#     'API_KEY': '286856359452878',
+#     'API_SECRET': 'XmiZTq8-3p-Yp7mD6t-W1ZOzOBo'
+# }
+
+# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
     
 

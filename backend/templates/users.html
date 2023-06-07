@@ -15,7 +15,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'backend/favicon.ico' %}"/>
     <link rel="mask-icon" href="safari-pinned-tab.svg" color="#00b4b6"/>
   
-    <meta name="description" content="Admin One - free Tailwind dashboard">
+    <meta name="description" content="ATA">
   
   
     <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -26,11 +26,75 @@
       gtag('js', new Date());
       gtag('config', 'UA-130795909-1');
     </script>
+
+
+<style>
+  /* Preloader CSS */
+  .preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff; /* Set your desired background color */
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .preloader .loader {
+    border: 4px solid rgba(0, 0, 0, 0.1); /* Set border color */
+    border-top: 4px solid #3498db; /* Set your desired loader color */
+    border-radius: 50%;
+    width: 60px; /* Set the desired size of the loader */
+    height: 60px; /* Set the desired size of the loader */
+    animation: spin 1.5s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Add animation effect to the preloader */
+  @keyframes fadeInOut {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  
+  .preloader {
+    animation: fadeInOut 3s linear infinite;
+  }
+  
+  
+  </style>
   
   </head>
 <body>
-
-<div id="app">
+  <div id="app">
+    <div class="preloader">
+      <div class="loader"></div>
+  </div>
+  <script>
+    // JavaScript to hide the preloader when the page is fully loaded
+  window.addEventListener('load', function () {
+  const preloader = document.querySelector('.preloader');
+  preloader.style.display = 'none';
+  });
+  
+  </script>
 
 <nav id="navbar-main" class="navbar is-fixed-top">
   <div class="navbar-brand">
@@ -80,9 +144,19 @@
     <a class="navbar-item mobile-aside-button">
       <span class="icon"><i class="mdi mdi-forwardburger mdi-24px"></i></span>
     </a>
-    <!-- <div class="navbar-item">
-      <div class="control"><input placeholder="Search everywhere..." class="input"></div>
-    </div> -->
+
+    <div class="navbar-item">
+      <form method="GET">
+        <div class="navbar-item">
+          <div class="control">
+            <input type="text" name="q" class="input" placeholder="Search by Username..." value="{{ request.GET.query }}">
+          </div>
+        </div>
+      </form>
+    </div>
+    
+    
+
   </div>
   <div class="navbar-brand is-right">
     <a class="navbar-item --jb-navbar-menu-toggle" data-target="navbar-menu">
@@ -120,6 +194,7 @@
 
 <aside class="aside is-placed-left is-expanded">
   <div class="aside-tools">
+    <img src="{% static 'backend/img/ata_logo.png' %}" class="rounded-full" style="width:45px; margin-right:5px;">
     <div>
       Admin <b class="font-black">ATA</b>
     </div>
@@ -138,7 +213,7 @@
     <ul class="menu-list">
       <li class="--set-active-tables-html">
         <a href="{% url 'backend:manageasset' %}">
-          <span class="icon"><i class="mdi mdi-table"></i></span>
+          <span class="icon"><i class="mdi mdi-table-edit"></i></span>
           <span class="menu-item-label">Manage Asset</span>
         </a>
       </li>
@@ -180,6 +255,13 @@
           <span class="icon"><i class="mdi mdi-alert-circle-outline"></i>
           </span>
           <span class="menu-item-label">View Report</span>
+        </a>
+      </li>
+      <li class="--set-active-tables-html">
+        <a href="{% url 'backend:report_log' %}">
+          <span class="icon"><i class="mdi mdi-history"></i>
+          </span>
+          <span class="menu-item-label">Report History</span>
         </a>
       </li>
       
@@ -227,15 +309,24 @@
 </section>
 
   <section class="section main-section">
-    <!-- <div class="notification blue">
-      <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
-        <div>
-          <span class="icon"><i class="mdi mdi-buffer"></i></span>
-          <b>Responsive table</b>
+    {% if messages %}
+    <div class="notification blue">
+        <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
+            <div>
+                <span class="icon"><i class="mdi mdi-buffer"></i></span>
+                <b>Notification</b>
+            </div>
+            <button type="button" class="button small textual --jb-notification-dismiss">Dismiss</button>
         </div>
-        <button type="button" class="button small textual --jb-notification-dismiss">Dismiss</button>
-      </div>
-    </div> -->
+        <div>
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
+    
     <div class="field">
       <div class="control">
         <button id="add-user-button" class="button green --jb-modal" data-target="sample-modal-2" type="button">
@@ -250,9 +341,13 @@
     <header class="modal-card-head">
       <p class="modal-card-title">Add User</p>
     </header>
+<<<<<<< HEAD
     <form method="POST" action="{% url 'backend:add_user' %}">
+=======
+    <section class="modal-card-body">
+    <form  method="POST" action="{% url 'backend:add_user' %}">
+>>>>>>> api
       {% csrf_token %}
-      <section class="modal-card-body">
         <div class="field">
           <label class="label">Username</label>
           <div class="control">
@@ -284,6 +379,7 @@
               <option value="admin">Admin</option>
               <option value="staff_user">Staff User</option>
               <option value="state_user">Estate User</option>
+              <option value="ICT_user">ICT User</option>
             </select>
           </div>
         </div>
@@ -322,9 +418,7 @@
           <span class="icon"><i class="mdi mdi-account-multiple"></i></span>
           Users
         </p>
-        <a href="#" class="card-header-icon">
-          <span class="icon"><i class="mdi mdi-reload"></i></span>
-        </a>
+        
       </header>
       <div class="card-content">
         <table>
@@ -343,20 +437,23 @@
                   <td data-label="Email">{{ user.email }}</td>
                   <td data-label="Role">
                     {% if user.is_superuser %}
-                        admin
-                    {% elif user.is_staff %}
-                        {% if user.groups.exists %}
-                            {% for group in user.groups.all %}
-                                {% if group.name == 'state_user' %}
-                                    Estate
-                                {% endif %}
-                            {% endfor %}
-                        {% else %}
-                            Staff
-                        {% endif %}
-                    {% else %}
-                        Unknown
-                    {% endif %}
+    Admin
+{% elif user.is_staff %}
+    {% if user.groups.exists %}
+        {% for group in user.groups.all %}
+            {% if group.name == 'state_user' %}
+                Estate
+            {% elif group.name == 'ict_user' %}
+                ICT
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        Staff
+    {% endif %}
+{% else %}
+    Unknown
+{% endif %}
+
 
                 </td>
 
@@ -419,10 +516,10 @@
 
     <div class="card empty">
       <div class="card-content">
-        <div>
+        <!-- <div>
           <span class="icon large"><i class="mdi mdi-emoticon-sad mdi-48px"></i></span>
         </div>
-        <p>Nothing's here…</p>
+        <p>Nothing's here…</p> -->
       </div>
     </div>
   </section>
@@ -494,5 +591,11 @@
 <!-- Icons below are for demo only. Feel free to use any icon pack. Docs: https://bulma.io/documentation/elements/icon/ -->
 <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
 
+
+
+
 </body>
 </html>
+
+
+

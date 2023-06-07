@@ -25,11 +25,74 @@
     gtag('js', new Date());
     gtag('config', 'UA-130795909-1');
   </script>
+  <style>
+    /* Preloader CSS */
+    .preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #fff; /* Set your desired background color */
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .preloader .loader {
+      border: 4px solid rgba(0, 0, 0, 0.1); /* Set border color */
+      border-top: 4px solid #3498db; /* Set your desired loader color */
+      border-radius: 50%;
+      width: 60px; /* Set the desired size of the loader */
+      height: 60px; /* Set the desired size of the loader */
+      animation: spin 1.5s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    
+    /* Add animation effect to the preloader */
+    @keyframes fadeInOut {
+      0% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+    
+    .preloader {
+      animation: fadeInOut 3s linear infinite;
+    }
+    
+    
+    </style>
 
 </head>
 <body>
+  <div id="app">
+    <div class="preloader">
+      <div class="loader"></div>
+  </div>
+  <script>
+    // JavaScript to hide the preloader when the page is fully loaded
+  window.addEventListener('load', function () {
+  const preloader = document.querySelector('.preloader');
+  preloader.style.display = 'none';
+  });
+  
+  </script>
 
-<div id="app">
 
   <nav id="navbar-main" class="navbar is-fixed-top">
     <div class="navbar-brand">
@@ -77,9 +140,12 @@
   
   <aside class="aside is-placed-left is-expanded">
     <div class="aside-tools">
+      <img src="{% static 'backend/img/ata_logo.png' %}" class="rounded-full" style="width:45px; margin-right:5px;">
       <div>
         Admin <b class="font-black">ATA</b>
       </div>
+      
+    
     </div>
     <div class="menu is-menu-main">
       <p class="menu-label">General</p>
@@ -96,8 +162,14 @@
       <ul class="menu-list">
         <li class="--set-active-tables-html">
           <a href="{% url 'backend:manageasset' %}">
-            <span class="icon"><i class="mdi mdi-table"></i></span>
+            <span class="icon"><i class="mdi mdi-table-edit"></i></span>
             <span class="menu-item-label">Manage Asset</span>
+          </a>
+        </li>
+        <li class="--set-active-tables-html">
+          <a href="{% url 'backend:inactive_assets' %}">
+            <span class="icon"><i class="mdi mdi-table"></i></span>
+            <span class="menu-item-label">Inactive Asset</span>
           </a>
         </li>
         <li class="--set-active-tables-html">
@@ -131,6 +203,13 @@
             <span class="icon"><i class="mdi mdi-alert-circle-outline"></i>
             </span>
             <span class="menu-item-label">View Report</span>
+          </a>
+        </li>
+        <li class="--set-active-tables-html">
+          <a href="{% url 'backend:report_log' %}">
+            <span class="icon"><i class="mdi mdi-history"></i>
+            </span>
+            <span class="menu-item-label">Report History</span>
           </a>
         </li>
         
@@ -188,7 +267,16 @@
                         {{ total_assets }}
                     </h1>
                 </div>
-                <span class="icon widget-icon text-green-500"><i class="mdi mdi-home mdi-48px"></i></span>
+                <span class="icon widget-icon text-blue-500">
+                  <i class="mdi mdi-cube-outline mdi-48px"></i>
+                </span>
+               
+                
+                
+                
+                
+                
+                
             </div>
         </div>
     </div>
@@ -204,7 +292,8 @@
                 {{ total_category }}
               </h1>
             </div>
-            <span class="icon widget-icon text-blue-500"><i class="mdi mdi-format-list-bulleted mdi-48px"></i>
+            <span class="icon widget-icon text-green-500">
+              <i class="mdi mdi-format-list-bulleted mdi-48px"></i>
             </span>
           </div>
         </div>
@@ -217,7 +306,11 @@
               <h3>Total Assigned Asset</h3>
               <h1>{{ total_owners }}</h1>
             </div>
-            <span class="icon widget-icon text-red-500"><i class="mdi mdi-finance mdi-48px"></i></span>
+            <span class="icon widget-icon text-red-500">
+              <i class="mdi mdi-account-multiple mdi-48px"></i>
+            </span>
+            
+            
           </div>
         </div>
       </div>
@@ -241,7 +334,7 @@
               <th>Asset Id</th>
               <th>Item Name</th>
               <th>Category</th>
-              <th>Sub-Category</th>
+              <!-- <th>Sub-Category</th> -->
               <th>Location</th>
               <th>Owner</th>
               <th>Purchase Date</th>
@@ -260,7 +353,7 @@
               <td data-label="Asset Id">{{ asset.asset_id }}</td>
               <td data-label="Asset Name">{{ asset.name }}</td>
               <td data-label="Category">{{ asset.category }}</td>
-              <td data-label="Sub-Category">{{ asset.sub_category }}</td>
+              <!-- <td data-label="Sub-Category">{{ asset.sub_category }}</td> -->
               <td data-label="Location">{{ asset.location }}</td>
               <td data-label="Owner">{{ asset.owner }}</td>
               <td data-label="Date">{{ asset.purchase_date }}</td>
@@ -305,7 +398,7 @@
   </div>
 </footer>
 
-<div id="sample-modal" class="modal">
+<!-- <div id="sample-modal" class="modal">
   <div class="modal-background --jb-modal-close"></div>
   <div class="modal-card">
     <header class="modal-card-head">
@@ -320,9 +413,9 @@
       <button class="button red --jb-modal-close">Confirm</button>
     </footer>
   </div>
-</div>
+</div> -->
 
-<div id="sample-modal-2" class="modal">
+<!-- <div id="sample-modal-2" class="modal">
   <div class="modal-background --jb-modal-close"></div>
   <div class="modal-card">
     <header class="modal-card-head">
@@ -337,7 +430,7 @@
       <button class="button blue --jb-modal-close">Confirm</button>
     </footer>
   </div>
-</div>
+</div> -->
 
 </div>
   <!-- Scripts below are for demo only -->

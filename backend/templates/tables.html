@@ -15,7 +15,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'backend/favicon.ico' %}"/>
     <link rel="mask-icon" href="safari-pinned-tab.svg" color="#00b4b6"/>
   
-    <meta name="description" content="Admin One - free Tailwind dashboard">
+    <meta name="description" content="ATA">
   
   
     <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -26,20 +26,83 @@
       gtag('js', new Date());
       gtag('config', 'UA-130795909-1');
     </script>
+
+<style>
+  /* Preloader CSS */
+  .preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff; /* Set your desired background color */
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .preloader .loader {
+    border: 4px solid rgba(0, 0, 0, 0.1); /* Set border color */
+    border-top: 4px solid #3498db; /* Set your desired loader color */
+    border-radius: 50%;
+    width: 60px; /* Set the desired size of the loader */
+    height: 60px; /* Set the desired size of the loader */
+    animation: spin 1.5s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Add animation effect to the preloader */
+  @keyframes fadeInOut {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  
+  .preloader {
+    animation: fadeInOut 3s linear infinite;
+  }
+  
+  
+  </style>
   
   </head>
 <body>
+  <div id="app">
+    <div class="preloader">
+      <div class="loader"></div>
+  </div>
 
-<div id="app">
+  <script>
+    // JavaScript to hide the preloader when the page is fully loaded
+  window.addEventListener('load', function () {
+  const preloader = document.querySelector('.preloader');
+  preloader.style.display = 'none';
+  });
+  
+  </script>
+
 
   <nav id="navbar-main" class="navbar is-fixed-top">
     <div class="navbar-brand">
       <a class="navbar-item mobile-aside-button">
         <span class="icon"><i class="mdi mdi-forwardburger mdi-24px"></i></span>
       </a>
-      <!-- <div class="navbar-item">
-        <div class="control"><input placeholder="Search everywhere..." class="input"></div>
-      </div> -->
+      
       <div class="navbar-item">
         <form method="GET">
           <div class="navbar-item">
@@ -87,6 +150,7 @@
   
   <aside class="aside is-placed-left is-expanded">
     <div class="aside-tools">
+      <img src="{% static 'backend/img/ata_logo.png' %}" class="rounded-full" style="width:45px; margin-right:5px;">
       <div>
         Admin <b class="font-black">ATA</b>
       </div>
@@ -105,8 +169,14 @@
       <ul class="menu-list">
         <li class="active">
           <a href="{% url 'backend:manageasset' %}">
-            <span class="icon"><i class="mdi mdi-table"></i></span>
+            <span class="icon"><i class="mdi mdi-table-edit"></i></span>
             <span class="menu-item-label">Manage Asset</span>
+          </a>
+        </li>
+        <li class="--set-active-tables-html">
+          <a href="{% url 'backend:inactive_assets' %}">
+            <span class="icon"><i class="mdi mdi-table"></i></span>
+            <span class="menu-item-label">Inactive Asset</span>
           </a>
         </li>
         <li class="--set-active-tables-html">
@@ -149,6 +219,13 @@
             <span class="icon"><i class="mdi mdi-alert-circle-outline"></i>
             </span>
             <span class="menu-item-label">View Report</span>
+          </a>
+        </li>
+        <li class="--set-active-tables-html">
+          <a href="{% url 'backend:report_log' %}">
+            <span class="icon"><i class="mdi mdi-history"></i>
+            </span>
+            <span class="menu-item-label">Report History</span>
           </a>
         </li>
         
@@ -196,6 +273,23 @@
 </section>
 
   <section class="section main-section">
+    {% if messages %}
+    <div class="notification blue">
+        <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
+            <div>
+                <span class="icon"><i class="mdi mdi-buffer"></i></span>
+                <b>Notification</b>
+            </div>
+            <button type="button" class="button small textual --jb-notification-dismiss">Dismiss</button>
+        </div>
+        <div>
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
     <!-- <div class="notification blue">
       <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
         <div>
@@ -215,7 +309,7 @@
         </button>
         <button id="add-user-button" class="button green --jb-modal" data-target="sample-modal-4" type="button">
           <a href="{% url 'backend:print_qr' %}">Print QR</a>
-        </button>
+        </button> 
         
         
         <button id="add-user-button" class="button green --jb-modal" data-target="" type="button">
@@ -243,7 +337,6 @@
               <th>Asset Id</th>
               <th>Item Name</th>
               <th>Category</th>
-              <th>Sub-Category</th>
               <th>Location</th>
               <th>Owner</th>
               <th>Purchase Date</th>
@@ -265,23 +358,46 @@
                 <td data-label="Asset Id">{{ asset.asset_id }}</td>
                 <td data-label="Asset Name">{{ asset.name }}</td>
                 <td data-label="Cagetory">{{ asset.category }}</td>
-                <td data-label="Sub-Category">{{ asset.sub_category }}</td>
+                <!-- <td data-label="Sub-Category">{{ asset.sub_category }}</td> -->
                 <td data-label="Location">{{ asset.location }}</td>
                 <td data-label="Owner">{{ asset.owner }}</td>
                 <td data-label="Date">{{ asset.purchase_date }}</td>
                 <td class="actions-cell">
-                  <div class="buttons right nowrap">
-                    <button class="button small blue" onclick="printQR('{{ asset.qr_code.url }}')" type="button">
+                  <div class="buttons center nowrap">
+                   
+                    <button class="button small blue" onclick="printQR('{{ asset.qr_code.url }}', '{{ asset.asset_id }}', '{{ asset.name }}', '{{ asset.category.category_name }}')" type="button">
                       <span class="icon"><i class="mdi mdi-printer"></i></span>
                     </button>
-                    <button class="button small green --jb-modal" data-target="sample-modal" data-asset-id="{{ asset.asset_id }}" data-asset-name="{{ asset.name }}" data-asset-category="{{ asset.category.pk }}" data-asset-sub-category="{{ asset.sub_category }}" data-asset-location="{{ asset.location }}" data-asset-owner="{{ asset.owner }}" data-asset-purchase-date="{{ asset.purchase_date }}" type="button">
+
+                    <button class="button small green --jb-modal" data-target="sample-modal" data-asset-id="{{ asset.asset_id }}" data-asset-name="{{ asset.name }}" data-asset-category="{{ asset.category.pk }}" data-asset-location="{{ asset.location }}" data-asset-owner="{{ asset.owner }}" data-asset-purchase-date="{{ asset.purchase_date }}" type="button">
                       <span class="icon"><i class="mdi mdi-pencil"></i></span>
                     </button>
-                    <button class="button small red --jb-modal" data-target="sample-modal-{{ asset.asset_id }}" type="button">
+                    <button class="button small orange --jb-modal" data-target="sample-modal-{{ asset.asset_id }}" type="button">
+                      <span class="icon"><i class="mdi mdi-toggle-switch-off"></i></span>
+                    </button>
+                     <!-- remove asset from the table modal to inactive table -->
+                     <div id="sample-modal-{{ asset.asset_id }}" class="modal">
+                      <div class="modal-background --jb-modal-close"></div>
+                      <div class="modal-card">
+                          <header class="modal-card-head">
+                              <p class="modal-card-title">Remove Asset</p>
+                          </header>
+                          <section class="modal-card-body">
+                              <p>Are you sure you want to make {{ asset.name }} status inactive?</p>
+                          </section>
+                          <footer class="modal-card-foot">
+                              <button class="button --jb-modal-close">Cancel</button>
+                              <form action="{% url 'backend:transfer_asset' asset.asset_id %}" method="POST" class="delete-form">
+                                {% csrf_token %}
+                                  <button type="submit" class="button red">Make Inactive</button>
+                              </form>
+                          </footer>
+                      </div>
+                    </div>
+                    <button class="button small red --jb-modal" data-target="sample-modal-delete-{{ asset.asset_id }}" type="button">
                       <span class="icon"><i class="mdi mdi-trash-can"></i></span>
                     </button>
-                     <!-- delete asset from the table modal -->
-                     <div id="sample-modal-{{ asset.asset_id }}" class="modal">
+                    <div id="sample-modal-delete-{{ asset.asset_id }}" class="modal">
                       <div class="modal-background --jb-modal-close"></div>
                       <div class="modal-card">
                           <header class="modal-card-head">
@@ -293,7 +409,9 @@
                           <footer class="modal-card-foot">
                               <button class="button --jb-modal-close">Cancel</button>
                               <form action="{% url 'backend:delete_asset' asset.asset_id %}" method="POST" class="delete-form">
-                                  {% csrf_token %}
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.path }}">
+
                                   <button type="submit" class="button red">Delete</button>
                               </form>
                           </footer>
@@ -310,7 +428,7 @@
             <tbody> -->
               {% for asset in assets %}
               <tr  id="asset-{{ asset.id }}">
-                <td class="slno">{{ forloop.counter }}</td>
+                <td class="slno">{{ forloop.counter0|add:assets.start_index }}</td>
                 <td class="image-cell">
                   <div class="image">
                     <img src="{{ asset.qr_code.url }}" class="rounded-full">
@@ -319,27 +437,51 @@
                 <td data-label="Asset Id">{{ asset.asset_id }}</td>
                 <td data-label="Asset Name">{{ asset.name }}</td>
                 <td data-label="Cagetory">{{ asset.category }}</td>
-                <td data-label="Sub-Category">{{ asset.sub_category }}</td>
+                <!-- <td data-label="Sub-Category">{{ asset.sub_category }}</td> -->
                 <td data-label="Location">{{ asset.location }}</td>
                 <td data-label="Owner">{{ asset.owner }}</td>
                 <td data-label="Date">{{ asset.purchase_date }}</td>
                 <td class="actions-cell">
-                  <div class="buttons right nowrap">
+                  <div class="buttons center nowrap">
                    
-                    <button class="button small blue" onclick="printQR('{{ asset.qr_code.url }}')" type="button">
+                    <button class="button small blue" onclick="printQR('{{ asset.qr_code.url }}', '{{ asset.asset_id }}', '{{ asset.name }}', '{{ asset.category.category_name }}')" type="button">
                       <span class="icon"><i class="mdi mdi-printer"></i></span>
                     </button>
                     
                     
-                    <button class="button small green --jb-modal" data-target="sample-modal" data-asset-id="{{ asset.asset_id }}" data-asset-name="{{ asset.name }}" data-asset-category="{{ asset.category.pk }}" data-asset-sub-category="{{ asset.sub_category }}" data-asset-location="{{ asset.location }}" data-asset-owner="{{ asset.owner }}" data-asset-purchase-date="{{ asset.purchase_date }}" type="button">
+                    <button class="button small green --jb-modal" data-target="sample-modal" data-asset-id="{{ asset.asset_id }}" data-asset-name="{{ asset.name }}" data-asset-category="{{ asset.category.pk }}"  data-asset-location="{{ asset.location }}" data-asset-owner="{{ asset.owner }}" data-asset-purchase-date="{{ asset.purchase_date }}" type="button">
                       <span class="icon"><i class="mdi mdi-pencil"></i></span>
                     </button>
                    
-                    <button class="button small red --jb-modal" data-target="sample-modal-{{ asset.asset_id }}" type="button">
-                      <span class="icon"><i class="mdi mdi-trash-can"></i></span>
+                    <button class="button small red  --jb-modal" style="background-color: #e6922e;" data-target="sample-modal-{{ asset.asset_id }}" type="button">
+                      <span class="icon"><i class="mdi mdi-toggle-switch-off"></i></span>
+
                     </button>
+                    
+                    
                     <!-- delete asset from the table modal -->
                       <div id="sample-modal-{{ asset.asset_id }}" class="modal">
+                        <div class="modal-background --jb-modal-close"></div>
+                        <div class="modal-card">
+                            <header class="modal-card-head">
+                                <p class="modal-card-title">Remove Asset</p>
+                            </header>
+                            <section class="modal-card-body">
+                                <p>Are you sure you want to make {{ asset.name }} status inactive?</p>
+                            </section>
+                            <footer class="modal-card-foot">
+                                <button class="button --jb-modal-close">Cancel</button>
+                                <form action="{% url 'backend:transfer_asset' asset.asset_id %}" method="POST" class="delete-form">
+                                  {% csrf_token %}
+                                    <button type="submit" class="button red">Make Inactive</button>
+                                </form>
+                            </footer>
+                        </div>
+                      </div>
+                      <button class="button small red --jb-modal" data-target="sample-modal-delete-{{ asset.asset_id }}" type="button">
+                        <span class="icon"><i class="mdi mdi-trash-can"></i></span>
+                      </button>
+                      <div id="sample-modal-delete-{{ asset.asset_id }}" class="modal">
                         <div class="modal-background --jb-modal-close"></div>
                         <div class="modal-card">
                             <header class="modal-card-head">
@@ -351,7 +493,9 @@
                             <footer class="modal-card-foot">
                                 <button class="button --jb-modal-close">Cancel</button>
                                 <form action="{% url 'backend:delete_asset' asset.asset_id %}" method="POST" class="delete-form">
-                                    {% csrf_token %}
+                                  {% csrf_token %}
+                                  <input type="hidden" name="next" value="{{ request.path }}">
+
                                     <button type="submit" class="button red">Delete</button>
                                 </form>
                             </footer>
@@ -367,91 +511,38 @@
             </tbody>
             {% endif %}
         </table>
-        <!-- <table>
-          <thead>
-            <tr>
-              <th>sl.no</th>
-              <th>QR Code</th>
-              <th>Asset Id</th>
-              <th>Item Name</th>
-              <th>Category</th>
-              <th>Sub-Category</th>
-              <th>Location</th>
-              <th>Owner</th>
-              <th>Purchase Date</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            
-            {% for asset in assets %}
-            <tr  id="asset-{{ asset.id }}">
-              <td class="slno">{{ forloop.counter }}</td>
-              <td class="image-cell">
-                <div class="image">
-                  <img src="{{ asset.qr_code.url }}" class="rounded-full">
-                </div>
-              </td>
-              <td data-label="Asset Id">{{ asset.asset_id }}</td>
-              <td data-label="Asset Name">{{ asset.name }}</td>
-              <td data-label="Cagetory">{{ asset.category }}</td>
-              <td data-label="Sub-Category">{{ asset.sub_category }}</td>
-              <td data-label="Location">{{ asset.location }}</td>
-              <td data-label="Owner">{{ asset.owner }}</td>
-              <td data-label="Date">{{ asset.purchase_date }}</td>
-              <td class="actions-cell">
-                <div class="buttons right nowrap">
-                 
-                  <button class="button small blue" onclick="printQR('{{ asset.qr_code.url }}')" type="button">
-                    <span class="icon"><i class="mdi mdi-printer"></i></span>
-                  </button>
-                  
-                  
-                  <button class="button small green --jb-modal" data-target="sample-modal" data-asset-id="{{ asset.asset_id }}" data-asset-name="{{ asset.name }}" data-asset-category="{{ asset.category.pk }}" data-asset-sub-category="{{ asset.sub_category }}" data-asset-location="{{ asset.location }}" data-asset-owner="{{ asset.owner }}" data-asset-purchase-date="{{ asset.purchase_date }}" type="button">
-                    <span class="icon"><i class="mdi mdi-pencil"></i></span>
-                  </button>
-                 
-                  <button class="button small red --jb-modal" data-target="sample-modal-{{ asset.asset_id }}" type="button">
-                    <span class="icon"><i class="mdi mdi-trash-can"></i></span>
-                  </button>
-                  
-                   
-
-                  
-                </div>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table> -->
-        
         
         {% if assets.has_other_pages %}
-  <div class="table-pagination">
-    <div class="flex items-center justify-between">
-      <div class="buttons">
-        {% if assets.has_previous %}
-          <a href="?page=1" class="button {% if assets.number == 1 %}active{% endif %}">&lt;&lt;</a>
-          <a href="?page={{ assets.previous_page_number }}" class="button {% if assets.number == 1 %}active{% endif %}">&lt;</a>
-        {% endif %}
+        <div class="table-pagination">
+          <div class="flex items-center justify-between">
+            <div class="buttons">
+              {% if assets.has_previous %}
+                <a href="?page=1" class="button {% if assets.number == 1 %}active{% endif %}">&lt;&lt;</a>
+                <a href="?page={{ assets.previous_page_number }}" class="button {% if assets.number == 1 %}active{% endif %}">&lt;</a>
+              {% endif %}
+              {% for i in page_range %}
+                {% if assets.number == i %}
+                  <button type="button" class="button active">{{ i }}</button>
+                {% else %}
+                  <a href="?page={{ i }}" class="button">{{ i }}</a>
+                {% endif %}
+              {% endfor %}
+      
+              {% if assets.has_next %}
+                {% if assets.number <= assets.paginator.num_pages|add:"-4" %}
+                  <a href="?page={{ assets.next_page_number }}" class="button">&gt;</a>
+                  <a href="?page={{ assets.paginator.num_pages }}" class="button">&gt;&gt;</a>
+                {% else %}
+                  <a href="?page={{ assets.next_page_number }}" class="button {% if assets.number == assets.paginator.num_pages %}active{% endif %}">&gt;</a>
+                  <a href="?page={{ assets.paginator.num_pages }}" class="button {% if assets.number == assets.paginator.num_pages %}active{% endif %}">&gt;&gt;</a>
+                {% endif %}
+              {% endif %}
+            </div>
+            <small>Page {{ assets.number }} of {{ assets.paginator.num_pages }}</small>
+          </div>
+        </div>
+      {% endif %}
     
-        {% for i in assets.paginator.page_range %}
-          {% if assets.number == i %}
-            <button type="button" class="button active">{{ i }}</button>
-          {% else %}
-            <a href="?page={{ i }}" class="button">{{ i }}</a>
-          {% endif %}
-        {% endfor %}
-    
-        {% if assets.has_next %}
-          <a href="?page={{ assets.next_page_number }}" class="button {% if assets.number == assets.paginator.num_pages %}active{% endif %}">&gt;</a>
-          <a href="?page={{ assets.paginator.num_pages }}" class="button {% if assets.number == assets.paginator.num_pages %}active{% endif %}">&gt;&gt;</a>
-        {% endif %}
-      </div>
-      <small>Page {{ assets.number }} of {{ assets.paginator.num_pages }}</small>
-    </div>
-  </div>
-{% endif %}
 
       </div>
     </div>
@@ -469,10 +560,10 @@
 
     <div class="card empty">
       <div class="card-content">
-        <div>
+        <!-- <div>
           <span class="icon large"><i class="mdi mdi-emoticon-sad mdi-48px"></i></span>
-        </div>
-        <p>Nothing's here…</p>
+        </div> -->
+        <!-- <p>Nothing's here…</p> -->
         
       </div>
     </div>
@@ -500,6 +591,7 @@
       <form method="POST" enctype="multipart/form-data" action="{% url 'backend:edit_asset' %}">
 
         {% csrf_token %}
+        <input type="hidden" name="source_page" value="active">
         <div class="field">
           <label class="label">Asset Id</label>
           <div class="control">
@@ -522,12 +614,12 @@
                 </select>
             </div>
         </div>
-        <div class="field">
+        <!-- <div class="field">
             <label class="label">Sub-Category</label>
             <div class="control">
                 <input class="input" type="text" name="sub_category" value="{{ asset.sub_category }}">
             </div>
-        </div>
+        </div> -->
         <div class="field">
             <label class="label">Location</label>
             <div class="control">
@@ -548,7 +640,7 @@
         </div>
         </section>
         <footer class="modal-card-foot">
-          <button class="button --jb-modal-close">Cancel</button>
+          <!-- <button class="button --jb-modal-close">Cancel</button> -->
           <button id="add-user-submit" class="button blue" type="submit">Save Changes</button>
         </footer>
     </form>                      
@@ -563,13 +655,13 @@
     <header class="modal-card-head">
       <p class="modal-card-title">Upload Excel File</p>
     </header>
-    <form method="post" enctype="multipart/form-data" action="{% url 'backend:upload_excel_file' %}">
+    <form method="post" enctype="multipart/form-data" action="{% url 'backend:upload_assets' %}">
       {% csrf_token %}
       <section class="modal-card-body">
         <div class="field">
           <label class="label">Choose Excel File:</label>
           <div class="control">
-            <input type="file" name="excel_file" accept=".xlsx, .xls">
+            <input type="file" name="file" accept=".xlsx, .xls" required>
           </div>
         </div>
       </section>
@@ -581,7 +673,7 @@
   </div>
 </div>
 
-<!-- export asset table asexcel file -->
+
 
 
 <!-- add asset individually modal -->
@@ -618,12 +710,12 @@
           </div>
         </div>
 
-        <div class="field">
+        <!-- <div class="field">
           <label class="label">Sub-Category</label>
           <div class="control">
             <input class="input" type="text" name="sub_category" placeholder="Enter asset sub-category" required>
           </div>
-        </div>
+        </div> -->
 
         <div class="field">
           <label class="label">Location</label>
@@ -658,20 +750,48 @@
 
 
 
+
+
+
+
 </div>
+
+
+<!-- print qr code individually -->
 <script>
+  function printQR(qrCodeUrl, assetId, assetName, assetCategory) {
+    var printWindow = window.open(qrCodeUrl);
+    printWindow.document.write('<html><head><style>@media print { img { width: 5cm; height: 5cm; } }</style></head><body>');
+    printWindow.document.write('<div>Asset ID: ' + assetId + '</div>');
+    printWindow.document.write('<div>Name: ' + assetName + '</div>');
+    printWindow.document.write('<div>Category: ' + assetCategory + '</div>');
+    printWindow.document.write('<img src="' + qrCodeUrl + '">');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+  }
+</script>
+<!-- <script>
+  function printQR(qrCodeUrl) {
+    var printWindow = window.open(qrCodeUrl);
+    printWindow.document.write('<html><head><style>@media print { img { width: 5cm; height: 5cm; } }</style></head><body><img src="' + qrCodeUrl + '"></body></html>');
+    printWindow.document.close();
+    printWindow.print();
+  }
+</script> -->
+<!-- <script>
   function printQR(qrCodeUrl) {
     var printWindow = window.open(qrCodeUrl);
     printWindow.print();
   }
-  </script>
+</script> -->
 <!-- script to pre-populate the edit details form  -->
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('sample-modal');
     const nameInput = document.getElementById('name-input');
     const categorySelect = document.querySelector('select[name="category"]');
-    const subCategoryInput = document.querySelector('input[name="sub_category"]');
+    // const subCategoryInput = document.querySelector('input[name="sub_category"]');
     const locationInput = document.querySelector('input[name="location"]');
     const ownerInput = document.querySelector('input[name="owner"]');
     const purchaseDateInput = document.querySelector('input[name="purchase_date"]');
@@ -682,7 +802,7 @@
       editButton.addEventListener('click', () => {
         const assetName = editButton.dataset.assetName;
         const assetCategory = editButton.dataset.assetCategory;
-        const assetSubCategory = editButton.dataset.assetSubCategory;
+        // const assetSubCategory = editButton.dataset.assetSubCategory;
         const assetLocation = editButton.dataset.assetLocation;
         const assetOwner = editButton.dataset.assetOwner;
         const assetId = editButton.dataset.assetId;
@@ -701,7 +821,7 @@
         
         nameInput.value = assetName;
         categorySelect.value = assetCategory;
-        subCategoryInput.value = assetSubCategory;
+        // subCategoryInput.value = assetSubCategory;
         locationInput.value = assetLocation;
         ownerInput.value = assetOwner;
         purchaseDateInput.value = formattedDate; // set the value of the input field
@@ -715,6 +835,8 @@
 </script>
 
 <!-- delete asset script -->
+
+  
 
 
 <!-- Scripts below are for demo only -->
