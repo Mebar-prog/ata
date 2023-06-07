@@ -13,20 +13,9 @@ import pandas as pd
 from backend.forms import AssetUploadForm
 from datetime import datetime
 from openpyxl import load_workbook
-<<<<<<< HEAD
-from openpyxl import Workbook
-from django.http import HttpResponse
-from django.conf import settings
-import os
-
-# import qrcode
-# from io import BytesIO
-# from django.core.files import File
-=======
 import os
 from django.http import HttpResponse
 from django.conf import settings
->>>>>>> api
 from django.http import FileResponse
 from openpyxl import Workbook
 import pytz
@@ -532,15 +521,12 @@ def add_user(request):
         elif role == 'state_user':
             # Create the "state_user" group if it doesn't exist
             group, created = Group.objects.get_or_create(name='state_user')
-<<<<<<< HEAD
-=======
             new_user.groups.add(group)
             new_user.is_staff = True
             new_user.save()
         elif role == 'ICT_user':
             # Create the "ict_user" group if it doesn't exist
             group, created = Group.objects.get_or_create(name='ict_user')
->>>>>>> api
             new_user.groups.add(group)
             new_user.is_staff = True
             new_user.save()
@@ -550,11 +536,6 @@ def add_user(request):
 
         messages.success(request, 'User created successfully')
         return redirect(reverse('backend:user_list'))
-<<<<<<< HEAD
-
-    return render(request, 'users.html')
-=======
->>>>>>> api
 
     return render(request, 'users.html', {'user_created': False})
 
@@ -843,15 +824,6 @@ def export_to_excel(request):
     ws = wb.active
     
     # Write the headers for the Excel file
-<<<<<<< HEAD
-    headers = ['Asset ID', 'Name', 'Category', 'Sub Category', 'Location', 'Owner', 'Purchase Date']
-    ws.append(headers)
-    
-    # Write the asset data to the Excel file
-    assets = Asset.objects.all().values_list(
-        'asset_id', 'name', 'category__category_name', 'sub_category', 'location', 'owner', 'purchase_date'
-    )
-=======
     headers = ['asset_id', 'name', 'category', 'location', 'owner', 'purchase_date']
     ws.append(headers)
     
@@ -861,7 +833,6 @@ def export_to_excel(request):
     )
     
     # Write the asset data to the Excel file
->>>>>>> api
     for asset in assets:
         ws.append(asset)
     
@@ -878,10 +849,6 @@ def export_to_excel(request):
         return response
     else:
         return HttpResponse("File not found.")
-<<<<<<< HEAD
-
-=======
->>>>>>> api
 
 # @login_required
 # def export_to_excel(request):
