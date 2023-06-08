@@ -689,13 +689,13 @@
         <div class="field">
           <label class="label">Asset Id</label>
           <div class="control">
-            <input class="input" type="text" name="asset_id" placeholder="Enter asset id" required>
+            <input class="input" type="text" name="asset_id" placeholder="Enter asset id" pattern="GC\d{2}\/\d{2}\/\d{5}" required>
           </div>
         </div>
         <div class="field">
           <label class="label">Name</label>
           <div class="control">
-            <input class="input" type="text" name="name" placeholder="Enter asset name" required>
+            <input class="input" type="text" name="name" placeholder="Enter asset name" pattern="[A-Za-z\s]+" required>
           </div>
         </div>
 
@@ -709,25 +709,17 @@
             </select>
           </div>
         </div>
-
-        <!-- <div class="field">
-          <label class="label">Sub-Category</label>
-          <div class="control">
-            <input class="input" type="text" name="sub_category" placeholder="Enter asset sub-category" required>
-          </div>
-        </div> -->
-
         <div class="field">
           <label class="label">Location</label>
           <div class="control">
-            <input class="input" type="text" name="location" placeholder="Enter asset location">
+            <input class="input" type="text" name="location" pattern="[A-Za-z0-9\s]+" placeholder="Enter asset location">
           </div>
         </div>
 
         <div class="field">
           <label class="label">Owner</label>
           <div class="control">
-            <input class="input" type="text" name="owner" placeholder="Enter asset owner">
+            <input class="input" type="text" name="owner" placeholder="Enter asset owner" pattern="(RUB\d{9}|GCIT\d{8}|\d{8}|\d{9})">
           </div>
         </div>
 

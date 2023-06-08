@@ -634,7 +634,6 @@ def transfer_asset(request, asset_id):
     asset.save()
 
     messages.success(request, 'Asset has been removed from active listing.')
-
     # Redirect back to the current page
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 # @login_required
@@ -645,8 +644,8 @@ def transfer_asset(request, asset_id):
 #     asset.is_active = False
 #     asset.save()
 
-#     messages.success(request, 'Asset has been removed from active listing.')
-#     return redirect('backend:manageasset')
+    # messages.success(request, 'Asset has been removed from active listing.')
+    # return redirect('backend:manageasset')
 
 
 from django.http import HttpResponseRedirect

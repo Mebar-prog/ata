@@ -38,16 +38,23 @@ urlpatterns = [
     # path('asset/<str:asset_id>/',asset_details, name='asset_details'),
     path('add-asset/',add_asset,name='add_asset'),
     path('edit_asset/',edit_asset, name='edit_asset'),
-    path('transfer_asset/<str:asset_id>/', transfer_asset, name='transfer_asset'),
+    # path('transfer_asset/<str:asset_id>/', transfer_asset, name='transfer_asset'),
+    re_path(r'^transfer_asset/(?P<asset_id>.+)/$', transfer_asset, name='transfer_asset'),
 
-    path('delete_asset/<str:asset_id>/',delete_asset, name='delete_asset'),
+
+    # path('delete_asset/<str:asset_id>/',delete_asset, name='delete_asset'),
+    re_path(r'^delete_asset/(?P<asset_id>.+)/$',delete_asset, name='delete_asset'),
+
+
     path('add_category/', add_category, name='add_category'),
     path('delete_category/<int:id>/',delete_category, name='delete_category'),
     path('edit_category/',edit_category, name='edit_category'),
     path('print_qr/', print_qr, name='print_qr'),
     path('export/', export_report_as_excel, name='export_report_as_excel'),
     path('inactive-assets/', inactive_assets, name='inactive_assets'),
-    path('activate_asset/<str:asset_id>/', activate_asset, name='activate_asset'),
+    # path('activate_asset/<str:asset_id>/', activate_asset, name='activate_asset'),
+    re_path(r'^activate_asset/(?P<asset_id>.+)/$',activate_asset, name='activate_asset'),
+
     path('export_inactive_to_excel/', export_inactive_to_excel, name='export_inactive_to_excel'),
     path('report_log/',report_log,name='report_log'),
 
