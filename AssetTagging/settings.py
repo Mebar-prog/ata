@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'rest_framework.authtoken',
+    'django_extensions',
 
 ]
 
@@ -212,4 +213,7 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = "sherabwang111@gmail.com"
 
 
-
+# GRAPH_MODELS = {
+#     'all_applications':True,
+#     'group_models': True,
+# }
