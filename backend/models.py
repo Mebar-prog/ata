@@ -4,6 +4,8 @@ from io import BytesIO
 from django.core.files.base import ContentFile
 from django.utils import timezone
 from django.contrib.auth.models import User, Group
+import urllib.parse
+
 
 # Create your models here. 
 class AssetCategory(models.Model):
@@ -33,7 +35,9 @@ class Asset(models.Model):
         # base_url = 'http://127.0.0.1:8000/'
 
         # Create the full URL for this asset's detail page
-        asset_url = f'{base_url}asset/{self.asset_id}/'
+        # asset_url = f'{base_url}asset/{self.asset_id}/'
+        encoded_asset_id = urllib.parse.quote(self.asset_id, safe='')
+        asset_url = f'{base_url}asset/{encoded_asset_id}/'
         # Encode the URL for use in a QR code
         # encoded_url = urllib.parse.quote(asset_url, safe='')
   
