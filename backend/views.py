@@ -25,6 +25,8 @@ from openpyxl.utils import get_column_letter
 from django.http import HttpResponse
 import re
 
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 
 # Create your views here.
@@ -1149,23 +1151,76 @@ def export_to_excel(request):
 
 # print qr code in bulk
 @login_required
-def print_qr(request):
+def print_qr_codes(request):
+    # Get all active assets
     assets = Asset.objects.filter(is_active=True)
-    qr_codes = []
+
+    # Create a list to store the data for the QR codes
+    qr_code_data = []
     for asset in assets:
-        # Append the QR code and asset details to the list
-        qr_codes.append({
-            'qr_code': asset.qr_code,
+        qr_code_data.append({
             'asset_id': asset.asset_id,
-            'name': asset.name,
-            'category': asset.category.category_name,
-            # 'sub_category': asset.sub_category,
-            'location': asset.location,
-            'owner': asset.owner,
+            'qr_code_url': asset.qr_code.url,
         })
+
+    # Generate the PDF document
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="qr_codes.pdf"'
+
+    p = canvas.Canvas(response, pagesize=letter)
+
+    qr_code_width = 80
+    qr_code_height = 80
+    x_start = 25
+    y_start = 680
+    x = x_start
+    y = y_start
+    line_spacing = 37
+    qr_code_per_page = 30
+
+    for i, data in enumerate(qr_code_data):
+        if i > 0 and i % qr_code_per_page == 0:
+            p.showPage()
+            x = x_start
+            y = y_start
+
+        if i > 0 and i % 5 == 0:
+            x = x_start
+            y -= qr_code_height + line_spacing
+
+        if i > 0 and i % 30 == 0:
+            x = x_start
+            y = y_start
+
+        # Draw the QR code
+        p.drawImage(data['qr_code_url'], x, y, width=qr_code_width, height=qr_code_height)
+
+        # Draw the asset ID and location
+        p.setFont("Helvetica", 6)
+        p.drawString(x+5, y - 10, f"Asset ID: {data['asset_id']}")
+
+        x += qr_code_width + line_spacing
+
+    p.save()
+    return response
+# @login_required
+# def print_qr(request):
+#     assets = Asset.objects.filter(is_active=True)
+#     qr_codes = []
+#     for asset in assets:
+#         # Append the QR code and asset details to the list
+#         qr_codes.append({
+#             'qr_code': asset.qr_code,
+#             'asset_id': asset.asset_id,
+#             'name': asset.name,
+#             'category': asset.category.category_name,
+#             # 'sub_category': asset.sub_category,
+#             'location': asset.location,
+#             'owner': asset.owner,
+#         })
     
-    # Render the template with the QR codes and asset details
-    return render(request, 'print_qr.html', {'qr_codes': qr_codes})
+#     # Render the template with the QR codes and asset details
+#     return render(request, 'print_qr.html', {'qr_codes': qr_codes})
 
 
 # Export report as excel
