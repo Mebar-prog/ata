@@ -56,6 +56,17 @@
                                     <img src="{% static 'frontend/img/slider/ata_logo.png' %}" alt="ATA" style="max-width: 20%; height: auto;">
                                 </div>
                                 <h4 class="login-title">LOGIN</h4>
+                                {% if messages %}
+                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                {% for message in messages %}
+                                                <div class="alert alert-danger">{{ message }}</div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
                                 <div class="row">
                                     <form method="POST" class="log-form" action="{% url 'frontend:admin_login' %}">
                                         {% csrf_token %}
@@ -83,17 +94,7 @@
                                             <div class="clear"></div>
                                         </div> 
                                     </form> 
-                                    {% if messages %}
-                                    <div class="col-md-12 col-sm-12 col-xs-12">
-                                        <div class="row">
-                                            <div class="col-md-12 col-sm-12 col-xs-12">
-                                                {% for message in messages %}
-                                                <div class="alert alert-danger">{{ message }}</div>
-                                                {% endfor %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {% endif %}
+                                    
                                 </div>
                             </div>
                         </div>
@@ -102,64 +103,6 @@
             </div>
         </div>
         
-        <!-- <div class="login-area page-padding">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12 col-sm-12 col-xs-12">
-                        <div class="login-page">
-                            <div class="login-form">
-                                <h4 class="login-title">LOGIN</h4>
-                                <div class="row">
-                                    
-                                    <form method="POST" class="log-form" action="{% url 'frontend:admin_login' %}">
-                                        {% csrf_token %}
-                                        <div class="col-md-12 col-sm-12 col-xs-12">
-                                            <input type="text" id="name" name="username" class="form-control" placeholder="Username" required>
-                                        </div>
-                                        <div class="col-md-12 col-sm-12 col-xs-12">
-                                            <input type="password" id="msg_subject" name="password" class="form-control" placeholder="Password" required>
-                                        </div>
-                                        <div class="col-md-12 col-sm-12 col-xs-12">
-                                            <div class="check-group flexbox">
-                                                <label class="check-box">
-                                                    <input type="checkbox" class="check-box-input">
-                                                    <span class="remember-text">Remember me</span>
-                                                </label>
-                                                
-                                                <a class="text-muted" href="{% url 'password_reset' %}">Forgot password?</a>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12 col-sm-12 col-xs-12">
-                                            <button type="submit" id="submit" class="login-btn">Login</button>
-                                            <div id="msgSubmit" class="h3 text-center hidden"></div> 
-                                            <div class="clearfix"></div>
-                                        </div>
-                                        <div class="col-md-12 col-sm-12 col-xs-12">
-                                            <div class="clear"></div>
-                                            
-                                        </div> 
-                                    </form> 
-                                    {% if messages %}
-                                    <div class="col-md-12 col-sm-12 col-xs-12">
-                                        <div class="row">
-                                            <div class="col-md-12 col-sm-12 col-xs-12">
-                                                {% for message in messages %}
-                                                <div class="alert alert-danger">{{ message }}</div>
-                                                {% endfor %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {% endif %}
-                                   
-                                   
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-             </div>
-        </div> -->
-		<!-- all js here -->
            <!-- Start Footer Area -->
            <footer class="footer1">
             <div class="footer-area">

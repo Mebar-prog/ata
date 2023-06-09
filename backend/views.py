@@ -1202,6 +1202,7 @@ def print_qr_codes(request):
         x += qr_code_width + line_spacing
 
     p.save()
+
     return response
 # @login_required
 # def print_qr(request):
