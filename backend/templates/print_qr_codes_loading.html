@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Loading...</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #loading-message {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100vh;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-message">{{ loading_message }}</div>
+    <script>
+        // Wait for the document to be fully loaded
+        document.addEventListener("DOMContentLoaded", function() {
+            // Perform a redirect to generate the PDF
+            window.location.href = "{% url 'backend:print_qr_codes' %}";
+        });
+    </script>
+</body>
+</html>

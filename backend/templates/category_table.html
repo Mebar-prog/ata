@@ -282,6 +282,23 @@
         <button type="button" class="button small textual --jb-notification-dismiss">Dismiss</button>
       </div>
     </div> -->
+    {% if messages %}
+    <div class="notification blue">
+        <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
+            <div>
+                <span class="icon"><i class="mdi mdi-buffer"></i></span>
+                <b>Notification</b>
+            </div>
+            <button type="button" class="button small textual --jb-notification-dismiss">Dismiss</button>
+        </div>
+        <div>
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
     <div class="field">
       <div class="control">
         <button id="add-user-button" class="button green --jb-modal" data-target="sample-modal-2" type="button">
@@ -472,7 +489,7 @@
         <div class="field">
             <label class="label">Name</label>
             <div class="control">
-                <input class="input" type="text" name="name" value="" id="name-input">
+                <input class="input" type="text" name="name" value="" pattern="[A-Za-z\s]+" id="name-input">
             </div>
         </div>
         <div class="field">
@@ -494,13 +511,13 @@
         <div class="field">
             <label class="label">Location</label>
             <div class="control">
-                <input class="input" type="text" name="location" value="{{ asset.location }}">
+                <input class="input" type="text" name="location"  pattern="[A-Za-z0-9\s]+" value="{{ asset.location }}">
             </div>
         </div>
         <div class="field">
             <label class="label">Owner</label>
             <div class="control">
-                <input class="input" type="text" name="owner" value="{{ asset.owner }}">
+                <input class="input" type="text" name="owner" pattern="(RUB\d{9}|GCIT\d{8}|\d{8}|\d{9})" value="{{ asset.owner }}">
             </div>
         </div>
         <div class="field">
@@ -550,13 +567,13 @@
         <div class="field">
           <label class="label">Asset Id</label>
           <div class="control">
-            <input class="input" type="text" name="asset_id" placeholder="Enter asset id" required>
+            <input class="input" type="text" name="asset_id" placeholder="Enter asset id" pattern="GC\d{2}\/\d{2}\/\d{5}" required>
           </div>
         </div>
         <div class="field">
           <label class="label">Name</label>
           <div class="control">
-            <input class="input" type="text" name="name" placeholder="Enter asset name" required>
+            <input class="input" type="text" name="name" placeholder="Enter asset name" pattern="[A-Za-z\s]+" required>
           </div>
         </div>
 
@@ -581,14 +598,14 @@
         <div class="field">
           <label class="label">Location</label>
           <div class="control">
-            <input class="input" type="text" name="location" placeholder="Enter asset location" required="false">
+            <input class="input" type="text" name="location" placeholder="Enter asset location" pattern="[A-Za-z0-9\s]+" required="false">
           </div>
         </div>
 
         <div class="field">
           <label class="label">Owner</label>
           <div class="control">
-            <input class="input" type="text" name="owner" placeholder="Enter asset owner" required="false">
+            <input class="input" type="text" name="owner" placeholder="Enter asset owner" pattern="(RUB\d{9}|GCIT\d{8}|\d{8}|\d{9})" required="false">
           </div>
         </div>
 

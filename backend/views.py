@@ -24,8 +24,7 @@ from openpyxl.styles import NamedStyle, Font, PatternFill
 from openpyxl.utils import get_column_letter
 from django.http import HttpResponse
 import re
-
-from reportlab.lib.pagesizes import letter
+from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
 
@@ -1165,18 +1164,18 @@ def print_qr_codes(request):
 
     # Generate the PDF document
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="qr_codes.pdf"'
+    response['Content-Disposition'] = 'inline; filename="qr_codes.pdf"'
 
-    p = canvas.Canvas(response, pagesize=letter)
+    p = canvas.Canvas(response, pagesize=A4)
 
     qr_code_width = 80
     qr_code_height = 80
     x_start = 25
-    y_start = 680
+    y_start = 750
     x = x_start
     y = y_start
     line_spacing = 37
-    qr_code_per_page = 30
+    qr_code_per_page = 35
 
     for i, data in enumerate(qr_code_data):
         if i > 0 and i % qr_code_per_page == 0:
@@ -1188,7 +1187,7 @@ def print_qr_codes(request):
             x = x_start
             y -= qr_code_height + line_spacing
 
-        if i > 0 and i % 30 == 0:
+        if i > 0 and i % 35 == 0:
             x = x_start
             y = y_start
 
@@ -1202,27 +1201,15 @@ def print_qr_codes(request):
         x += qr_code_width + line_spacing
 
     p.save()
-
     return response
-# @login_required
-# def print_qr(request):
-#     assets = Asset.objects.filter(is_active=True)
-#     qr_codes = []
-#     for asset in assets:
-#         # Append the QR code and asset details to the list
-#         qr_codes.append({
-#             'qr_code': asset.qr_code,
-#             'asset_id': asset.asset_id,
-#             'name': asset.name,
-#             'category': asset.category.category_name,
-#             # 'sub_category': asset.sub_category,
-#             'location': asset.location,
-#             'owner': asset.owner,
-#         })
-    
-#     # Render the template with the QR codes and asset details
-#     return render(request, 'print_qr.html', {'qr_codes': qr_codes})
 
+@login_required
+def print_qr_codes_with_loading(request):
+    # Render a template with a loading message
+    loading_context = {
+        'loading_message': 'Please wait while the PDF is being generated...'
+    }
+    return render(request, 'print_qr_codes_loading.html', loading_context, content_type='text/html')
 
 # Export report as excel
 

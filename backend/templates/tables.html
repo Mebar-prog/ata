@@ -309,7 +309,7 @@
         </button>
   
         <button id="add-user-button" class="button green --jb-modal" data-target="sample-modal-4" type="button">
-          <a href="{% url 'backend:print_qr_codes' %}">Print QR</a>
+          <a target="_blank" href="{% url 'backend:print_qr_codes_with_loading' %}">Print QR</a>
         </button> 
         
         <button id="add-user-button" class="button green --jb-modal" data-target="" type="button">
@@ -601,7 +601,7 @@
         <div class="field">
             <label class="label">Name</label>
             <div class="control">
-                <input class="input" type="text" name="name" value="" id="name-input">
+                <input class="input" type="text" name="name" value="" pattern="[A-Za-z\s]+" id="name-input">
             </div>
         </div>
         <div class="field">
@@ -623,13 +623,13 @@
         <div class="field">
             <label class="label">Location</label>
             <div class="control">
-                <input class="input" type="text" name="location" value="{{ asset.location }}">
+                <input class="input" type="text" name="location" pattern="[A-Za-z0-9\s]+" value="{{ asset.location }}">
             </div>
         </div>
         <div class="field">
             <label class="label">Owner</label>
             <div class="control">
-                <input class="input" type="text" name="owner" value="{{ asset.owner }}">
+                <input class="input" type="text" name="owner" pattern="(RUB\d{9}|GCIT\d{8}|\d{8}|\d{9})" value="{{ asset.owner }}">
             </div>
         </div>
         <div class="field">
@@ -741,7 +741,7 @@
       <p class="modal-card-title">Upload Asset Details</p>
     </header>
     <section class="modal-card-body">
-      <form method="POST" enctype="multipart/form-data" action="{% url 'backend:add_asset' %}">
+      <form id="add-asset-form" method="POST" enctype="multipart/form-data" action="{% url 'backend:add_asset' %}">
         {% csrf_token %}
         <div class="field">
           <label class="label">Asset Id</label>
@@ -789,19 +789,23 @@
     </section>
     <footer class="modal-card-foot">
       <button class="button --jb-modal-close">Cancel</button>
-      <button id="add-user-submit" class="button blue" type="submit">Submit</button>
+      <button id="add-asset-submit" class="button blue" type="submit">Submit</button>
     </footer>
 </form>
   </div>
 </div>
+<script>
+  // Change the text on the button to "Uploading..." after click
+  document.getElementById('add-asset-form').addEventListener('submit', function() {
+    var uploadButton = document.getElementById('add-asset-submit');
+    var preloader = document.getElementById('preloader');
+    
+    uploadButton.innerHTML = 'Uploading...';
+    uploadButton.setAttribute('disabled', 'disabled');
+    preloader.style.display = 'block';
+  });
+</script>
 <!-- end of add asset individually modal -->
-
-
-
-
-
-
-
 
 </div>
 
@@ -820,20 +824,7 @@
     printWindow.print();
   }
 </script>
-<!-- <script>
-  function printQR(qrCodeUrl) {
-    var printWindow = window.open(qrCodeUrl);
-    printWindow.document.write('<html><head><style>@media print { img { width: 5cm; height: 5cm; } }</style></head><body><img src="' + qrCodeUrl + '"></body></html>');
-    printWindow.document.close();
-    printWindow.print();
-  }
-</script> -->
-<!-- <script>
-  function printQR(qrCodeUrl) {
-    var printWindow = window.open(qrCodeUrl);
-    printWindow.print();
-  }
-</script> -->
+
 <!-- script to pre-populate the edit details form  -->
 <script>
   document.addEventListener('DOMContentLoaded', () => {
