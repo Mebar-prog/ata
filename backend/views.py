@@ -23,6 +23,8 @@ from openpyxl import Workbook
 from openpyxl.styles import NamedStyle, Font, PatternFill
 from openpyxl.utils import get_column_letter
 from django.http import HttpResponse
+import re
+
 
 
 # Create your views here.
@@ -30,6 +32,7 @@ from django.http import HttpResponse
 def dashboard(request):
     assets = Asset.objects.order_by('-item_creation_date')[:5]
     a = Asset.objects.filter(is_active=True)
+    # assets = Asset.objects.filter(is_active=True).order_by('-item_creation_date')[:5]
     category = AssetCategory.objects.all()
     total_category = category.count()
     total_assets = a.count()
@@ -725,45 +728,10 @@ def save_report(request):
 
     return render(request, 'frontend/detail.html')
 
+import tempfile
+import re
 
-# def save_report(request):
-#     if request.method == 'POST':
-#         # Get the form data
-#         asset_id = request.POST['asset_id']
-#         asset = Asset.objects.get(asset_id=asset_id)
-#         name = request.POST['name']
-#         email = request.POST['email']
-#         description = request.POST['description']
-
-#         # Check if a report object already exists for this asset
-#         if Report.objects.filter(asset=asset).exists():
-#             return redirect(reverse('frontend:report_error'))
-
-#         # Create a new report object
-#         report = Report.objects.create(
-#             name=name,
-#             email=email,
-#             description=description,
-#             asset=asset
-#         )
-        
-#         user_emails = list(User.objects.values_list('email', flat=True))
-#         # Send email to all users in the system
-#         send_mail(
-#         'New Report Submitted',
-#         f'A new report has been submitted for asset id {asset_id}.\n\nName: {name}\nEmail: {email}\nDescription: {description}',
-#         'from@example.com',
-#         user_emails,
-#         fail_silently=False,
-# )
-
-#         return redirect('frontend:index')
-
-#     return render(request, 'frontend/detail.html')
-
-
-
-# upload asset detail in bulk
+@login_required
 def upload_assets(request):
     form = AssetUploadForm()
 
@@ -771,33 +739,101 @@ def upload_assets(request):
         form = AssetUploadForm(request.POST, request.FILES)
         if form.is_valid():
             file = form.cleaned_data['file']
-            df = pd.read_excel(file)
+
+            # Save the uploaded file to a temporary location
+            with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+                temp_file.write(file.read())
+
+            df = pd.read_excel(temp_file.name)
 
             existing_asset_ids = Asset.objects.values_list('asset_id', flat=True)
 
             duplicate_assets = []
             new_assets = []
 
+            validation_errors = []
+            invalid_asset_ids = []  # Store invalid asset_id values
+            invalid_name_rows = []  # Store rows with invalid name format
+            invalid_location_rows = []  # Store rows with invalid location format
+            invalid_owner_rows = []  # Store rows with invalid owner format
+
             for _, row in df.iterrows():
-                asset_id = row['asset_id']
+                asset_id = str(row['asset_id'])  # Convert to string
                 if asset_id in existing_asset_ids:
                     duplicate_assets.append(asset_id)
-                else:
-                    asset_category, _ = AssetCategory.objects.get_or_create(category_name=row['category'])
-                    purchase_date_str = str(row['purchase_date'])
-                    purchase_date = datetime.strptime(purchase_date_str, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
-                    asset = Asset(
-                        asset_id=asset_id,
-                        name=row['name'],
-                        category=asset_category,
-                        location=row['location'],
-                        owner=row['owner'],
-                        purchase_date=purchase_date
-                    )
-                    new_assets.append(asset)
+                    continue
+
+                asset_category, _ = AssetCategory.objects.get_or_create(category_name=row['category'])
+
+                # Validate asset_id using regex
+                if not re.match(r'^GC\d{2}\/\d{2}\/\d{5}$', str(asset_id)):
+                    invalid_asset_ids.append(str(asset_id))  # Add invalid asset_id to the list
+                    continue
+
+                # Validate name using regex
+                name = row['name']
+                if not re.match(r'^[A-Za-z\s]+$', name):
+                    invalid_name_rows.append(row)  # Add the row to invalid_name_rows
+                    continue
+
+                # Validate location using regex
+                location = row['location']
+                if not re.match(r'^[A-Za-z0-9\s]+$', str(location)):
+                    invalid_location_rows.append(row)  # Add the row to invalid_location_rows
+                    continue
+
+                # Validate owner using regex
+                owner = row['owner']
+                if not re.match(r'^(RUB\d{9}|GCIT\d{8}|\d{8}|\d{9})$', str(owner)):
+                    invalid_owner_rows.append(row)  # Add the row to invalid_owner_rows
+                    continue
+
+                purchase_date_str = str(row['purchase_date'])
+                purchase_date = datetime.strptime(purchase_date_str, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
+                asset = Asset(
+                    asset_id=asset_id,
+                    name=name,
+                    category=asset_category,
+                    location=location,
+                    owner=owner,
+                    purchase_date=purchase_date
+                )
+                new_assets.append(asset)
 
             if duplicate_assets:
-                messages.warning(request, "The following assets already exist")
+                messages.warning(request, "The file contains assets that already exist in the system")
+                return redirect(reverse('backend:manageasset'))
+
+            if invalid_asset_ids:
+                invalid_asset_ids_msg = ', '.join(invalid_asset_ids)  # Join invalid asset_id values
+                messages.error(request, f"Invalid asset_id format for assets: {invalid_asset_ids_msg}")
+                return redirect(reverse('backend:manageasset'))
+
+            if invalid_name_rows:
+                validation_errors.append("Invalid name format for the following assets:")
+                for row in invalid_name_rows:
+                    asset_id = row['asset_id']
+                    validation_errors.append(f"- Asset ID: {asset_id}")
+                validation_errors.append("")  # Add a blank line for formatting
+            
+            if invalid_location_rows:
+                validation_errors.append("Invalid location format for the following assets:")
+                for row in invalid_location_rows:
+                    asset_id = row['asset_id']
+                    validation_errors.append(f"- Asset ID: {asset_id}")
+                validation_errors.append("")  # Add a blank line for formatting
+
+            if invalid_owner_rows:
+                validation_errors.append("Invalid owner format for the following assets:")
+                for row in invalid_owner_rows:
+                    asset_id = row['asset_id']
+                    validation_errors.append(f"- Asset ID: {asset_id}")
+                validation_errors.append("")  # Add a blank line for formatting
+
+            if validation_errors:
+                for error in validation_errors:
+                    messages.error(request, error)
+                return redirect(reverse('backend:manageasset'))
 
             if new_assets:
                 Asset.objects.bulk_create(new_assets)
@@ -808,9 +844,208 @@ def upload_assets(request):
 
                 messages.success(request, 'File Uploaded Successfully')
 
-            return redirect(reverse('backend:manageasset'))  
+            # Delete the temporary file
+            os.remove(temp_file.name)
+
+            return redirect(reverse('backend:manageasset'))
 
     return render(request, 'tables.html', {'form': form})
+
+
+
+# def upload_assets(request):
+#     form = AssetUploadForm()
+
+#     if request.method == 'POST':
+#         form = AssetUploadForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             file = form.cleaned_data['file']
+
+#             # Save the uploaded file to a temporary location
+#             with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+#                 temp_file.write(file.read())
+
+#             df = pd.read_excel(temp_file.name)
+
+#             existing_asset_ids = Asset.objects.values_list('asset_id', flat=True)
+
+#             duplicate_assets = []
+#             new_assets = []
+
+#             validation_errors = []
+#             invalid_asset_ids = []  # Store invalid asset_id values
+
+#             for _, row in df.iterrows():
+#                 asset_id = str(row['asset_id'])  # Convert to string
+#                 if asset_id in existing_asset_ids:
+#                     duplicate_assets.append(asset_id)
+#                     continue
+
+#                 asset_category, _ = AssetCategory.objects.get_or_create(category_name=row['category'])
+
+#                 # Validate asset_id using regex
+#                 if not re.match(r'^GC\d{2}\/\d{2}\/\d{5}$', str(asset_id)):
+#                     invalid_asset_ids.append(str(asset_id))  # Add invalid asset_id to the list
+#                     continue
+
+#                 # Validate name using regex
+#                 name = row['name']
+#                 if not re.match(r'^[A-Za-z\s]+$', name):
+#                     validation_errors.append(f"Invalid name format for asset: {asset_id}")
+#                     break  # Stop processing further rows
+
+#                 # Validate location using regex
+#                 location = row['location']
+#                 if not re.match(r'^[A-Za-z0-9\s]+$', str(location)):
+#                     validation_errors.append(f"Invalid location format for asset: {asset_id}")
+#                     break  # Stop processing further rows
+
+#                 # Validate owner using regex
+#                 owner = row['owner']
+#                 if not re.match(r'^(RUB\d{9}|GCIT\d{8}|\d{8}|\d{9})$', str(owner)):
+#                     validation_errors.append(f"Invalid owner format for asset: {asset_id}")
+#                     break  # Stop processing further rows
+                
+
+#                 purchase_date_str = str(row['purchase_date'])
+#                 purchase_date = datetime.strptime(purchase_date_str, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
+#                 asset = Asset(
+#                     asset_id=asset_id,
+#                     name=name,
+#                     category=asset_category,
+#                     location=location,
+#                     owner=owner,
+#                     purchase_date=purchase_date
+#                 )
+#                 new_assets.append(asset)
+
+#             if duplicate_assets:
+#                 messages.warning(request, "The file contains assets that already exist in the system")
+#                 return redirect(reverse('backend:manageasset'))
+
+#             if invalid_asset_ids:
+#                 invalid_asset_ids_msg = ', '.join(invalid_asset_ids)  # Join invalid asset_id values
+#                 validation_errors.append(f"Invalid asset_id format for assets: {invalid_asset_ids_msg}")
+#                 for error in validation_errors:
+#                     messages.error(request, error)
+#                 return redirect(reverse('backend:manageasset'))
+
+#             if new_assets:
+#                 Asset.objects.bulk_create(new_assets)
+
+#                 # Generate QR code and save for each asset
+#                 for asset in new_assets:
+#                     asset.save()
+
+#                 messages.success(request, 'File Uploaded Successfully')
+
+#             # Delete the temporary file
+#             os.remove(temp_file.name)
+
+#             return redirect(reverse('backend:manageasset'))
+
+#     return render(request, 'tables.html', {'form': form})
+
+
+
+
+# def upload_assets(request):
+#     form = AssetUploadForm()
+
+#     if request.method == 'POST':
+#         form = AssetUploadForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             file = form.cleaned_data['file']
+#             df = pd.read_excel(file)
+
+#             existing_asset_ids = Asset.objects.values_list('asset_id', flat=True)
+
+#             duplicate_assets = []
+#             new_assets = []
+
+#             for _, row in df.iterrows():
+#                 asset_id = row['asset_id']
+#                 if asset_id in existing_asset_ids:
+#                     duplicate_assets.append(asset_id)
+#                 else:
+#                     asset_category, _ = AssetCategory.objects.get_or_create(category_name=row['category'])
+#                     purchase_date_str = str(row['purchase_date'])
+#                     purchase_date = datetime.strptime(purchase_date_str, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
+#                     asset = Asset(
+#                         asset_id=asset_id,
+#                         name=row['name'],
+#                         category=asset_category,
+#                         location=row['location'],
+#                         owner=row['owner'],
+#                         purchase_date=purchase_date
+#                     )
+#                     new_assets.append(asset)
+
+#             if duplicate_assets:
+#                 messages.warning(request, "The file contains asset that already exist in the system")
+#                 return redirect(reverse('backend:manageasset'))
+            
+#             if new_assets:
+#                 Asset.objects.bulk_create(new_assets)
+
+#                 # Generate QR code and save for each asset
+#                 for asset in new_assets:
+#                     asset.save()
+
+#                 messages.success(request, 'File Uploaded Successfully')
+
+#             return redirect(reverse('backend:manageasset'))
+
+#     return render(request, 'tables.html', {'form': form})
+
+# @login_required
+# def upload_assets(request):
+#     form = AssetUploadForm()
+
+#     if request.method == 'POST':
+#         form = AssetUploadForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             file = form.cleaned_data['file']
+#             df = pd.read_excel(file)
+
+#             existing_asset_ids = Asset.objects.values_list('asset_id', flat=True)
+
+#             duplicate_assets = []
+#             new_assets = []
+
+#             for _, row in df.iterrows():
+#                 asset_id = row['asset_id']
+#                 if asset_id in existing_asset_ids:
+#                     duplicate_assets.append(asset_id)
+#                 else:
+#                     asset_category, _ = AssetCategory.objects.get_or_create(category_name=row['category'])
+#                     purchase_date_str = str(row['purchase_date'])
+#                     purchase_date = datetime.strptime(purchase_date_str, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d')
+#                     asset = Asset(
+#                         asset_id=asset_id,
+#                         name=row['name'],
+#                         category=asset_category,
+#                         location=row['location'],
+#                         owner=row['owner'],
+#                         purchase_date=purchase_date
+#                     )
+#                     new_assets.append(asset)
+
+#             if duplicate_assets:
+#                 messages.warning(request, "The file contains some duplicate assets")
+
+#             if new_assets:
+#                 Asset.objects.bulk_create(new_assets)
+
+#                 # Generate QR code and save for each asset
+#                 for asset in new_assets:
+#                     asset.save()
+
+#                 messages.success(request, 'File Uploaded Successfully')
+
+#             return redirect(reverse('backend:manageasset'))  
+
+#     return render(request, 'tables.html', {'form': form})
 
 
 

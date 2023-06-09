@@ -649,7 +649,7 @@
 <!-- end of edit asset modal --> 
        
 <!-- bulk asset upload from excel file -->
-<div id="sample-modal-3" class="modal">
+<!-- <div id="sample-modal-3" class="modal">
   <div class="modal-background --jb-modal-close"></div>
   <div class="modal-card">
     <header class="modal-card-head">
@@ -666,12 +666,69 @@
         </div>
       </section>
       <footer class="modal-card-foot">
-        <!-- <button class="button --jb-modal-close">Cancel</button> -->
         <button class="button blue" type="submit">Upload</button>
       </footer>
     </form>
   </div>
+</div> -->
+<div id="sample-modal-3" class="modal">
+  <div class="modal-background --jb-modal-close"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Upload Excel File</p>
+    </header>
+    <form id="upload-form" method="post" enctype="multipart/form-data" action="{% url 'backend:upload_assets' %}">
+      {% csrf_token %}
+      <section class="modal-card-body">
+        <div class="field">
+          <label class="label">Choose Excel File:</label>
+          <div class="control">
+            <input type="file" name="file" accept=".xlsx, .xls" required>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button id="upload-button" class="button blue" type="submit">Upload</button>
+      </footer>
+    </form>
+  </div>
 </div>
+
+<script>
+  // Change the text on the button to "Uploading..." after click
+  document.getElementById('upload-form').addEventListener('submit', function() {
+    var uploadButton = document.getElementById('upload-button');
+    var preloader = document.getElementById('preloader');
+    
+    uploadButton.innerHTML = 'Uploading...';
+    uploadButton.setAttribute('disabled', 'disabled');
+    preloader.style.display = 'block';
+  });
+</script>
+
+
+
+
+
+
+
+<script>
+  // Disable the button and show preloader on form submission
+  document.getElementById('upload-form').addEventListener('submit', function() {
+    var uploadButton = document.getElementById('upload-button');
+    var preloader = document.getElementById('preloader');
+    
+    uploadButton.setAttribute('disabled', 'disabled');
+    preloader.style.display = 'block';
+    
+    // You can also add additional logic here, such as delaying form submission
+    // to show the preloading state for a certain duration before submitting the form.
+    // For example, you can use setTimeout to delay form submission by 2 seconds:
+    // setTimeout(function() {
+    //   document.getElementById('upload-form').submit();
+    // }, 2000);
+  });
+</script>
 
 
 
@@ -753,7 +810,7 @@
 <script>
   function printQR(qrCodeUrl, assetId, assetName, assetCategory) {
     var printWindow = window.open(qrCodeUrl);
-    printWindow.document.write('<html><head><style>@media print { img { width: 5cm; height: 5cm; } }</style></head><body>');
+    printWindow.document.write('<html><head><style>@media print { img { width: 150px; height: 150px; } }</style></head><body>');
     printWindow.document.write('<div>Asset ID: ' + assetId + '</div>');
     printWindow.document.write('<div>Name: ' + assetName + '</div>');
     printWindow.document.write('<div>Category: ' + assetCategory + '</div>');
