@@ -25,13 +25,13 @@
           <div class="container">
               <div class="row">
                   <div class="col-md-8 col-md-offset-2">
-                      <h1>{{ asset.name }}</h1>
+                      <h1>Location: {{ asset.location }}</h1>
                       <hr>
                       <div class="asset-details">
                           <p><strong>Asset ID:</strong> {{ asset.asset_id }}</p>
+                          <p><strong>Name:</strong> {{ asset.name }}</p>
                           <p><strong>Category:</strong> {{ asset.category }}</p>
                           <!-- <p><strong>Subcategory:</strong> {{ asset.sub_category }}</p> -->
-                          <p><strong>Location:</strong> {{ asset.location }}</p>
                           <p><strong>Owner:</strong> {{ asset.owner }}</p>
                           <p><strong>Purchase date:</strong> {{ asset.purchase_date }}</p>
                       </div>
@@ -53,9 +53,10 @@
                         <div class="help-block with-errors"></div>
                     </div>
                     <div class="col-md-12 col-sm-12 col-xs-12">
-                        <input type="email" class="email form-control" id="email" name="email" placeholder="Email" pattern="[a-zA-Z0-9]+\.gcit@rub\.edu\.bt" required data-error="Please enter your email">
+                        <input type="email" class="email form-control" id="email" name="email" placeholder="example.gcit@rub.edu.bt" pattern="[a-zA-Z0-9]+\.gcit@rub\.edu\.bt" required data-error="Please enter your email">
                         <div class="help-block with-errors"></div>
                     </div>
+
                 
                     <input type="hidden" name="asset_id" value="{{ asset.asset_id }}">
                 

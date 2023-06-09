@@ -106,6 +106,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'AssetTagging.wsgi.application'
 
+LOGIN_URL = "frontend:admin_login"
 
 # session expiration time
 # SESSION_COOKIE_AGE = 3600  # 1 hour in seconds
