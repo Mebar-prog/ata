@@ -1160,6 +1160,8 @@ def print_qr_codes(request):
         qr_code_data.append({
             'asset_id': asset.asset_id,
             'qr_code_url': asset.qr_code.url,
+            'name': asset.name,
+            'category': asset.category,
         })
 
     # Generate the PDF document
@@ -1196,7 +1198,9 @@ def print_qr_codes(request):
 
         # Draw the asset ID and location
         p.setFont("Helvetica", 6)
-        p.drawString(x+5, y - 10, f"Asset ID: {data['asset_id']}")
+        p.drawString(x+5, y - 7, f"Asset ID: {data['asset_id']}")
+        p.drawString(x+19, y - 16, f"Name: {data['name']}")
+        p.drawString(x+5, y - 25, f"Category: {data['category']}")
 
         x += qr_code_width + line_spacing
 
