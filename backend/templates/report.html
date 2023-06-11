@@ -264,7 +264,7 @@ window.addEventListener('load', function () {
 <section class="is-title-bar">
   <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
     <ul>
-      <li>Admin</li>
+      <li>{{ role_name }}</li>
       <li>View Report</li>
     </ul>
    
@@ -516,13 +516,13 @@ window.addEventListener('load', function () {
               <div class="field">
                   <label class="label">Remark</label>
                   <div class="control">
-                      <textarea class="textarea" name="remark"></textarea>
+                      <textarea id="remark-input" class="textarea" name="remark" maxlength="25"></textarea>
                   </div>
               </div>
          
       </section>
       <footer class="modal-card-foot">
-        <button id="add-user-submit" class="button blue" type="submit">Submit</button>
+        <button class="button blue" type="submit">Submit</button>
       </footer>
     </form>
   </div>
