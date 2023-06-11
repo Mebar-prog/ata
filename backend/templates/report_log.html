@@ -159,9 +159,18 @@ window.addEventListener('load', function () {
   <aside class="aside is-placed-left is-expanded">
     <div class="aside-tools">
       <img src="{% static 'backend/img/ata_logo.png' %}" class="rounded-full" style="width:45px; margin-right:5px;">
-      <div>
+      <!-- <div>
         Admin <b class="font-black">ATA</b>
+      </div> -->
+      <div>
+        {% if role_name %}
+          {{ role_name }}
+        {% else %}
+          User
+        {% endif %}
+        <b class="font-black">ATA</b>
       </div>
+      
     </div>
     {% if not request.is_state_user %}
     <div class="menu is-menu-main">

@@ -31,6 +31,18 @@ from reportlab.pdfgen import canvas
 # Create your views here.
 @login_required
 def dashboard(request):
+    user = request.user
+    role_name = None
+
+    if user.is_superuser:
+        role_name = 'Admin'
+    elif user.is_staff and not user.groups.exists():
+        role_name = 'Staff'
+    elif user.groups.filter(name='state_user').exists():
+        role_name = 'Estate'
+    elif user.groups.filter(name='ict_user').exists():
+        role_name = 'ICT'
+
     assets = Asset.objects.order_by('-item_creation_date')[:5]
     a = Asset.objects.filter(is_active=True)
     # assets = Asset.objects.filter(is_active=True).order_by('-item_creation_date')[:5]
@@ -45,6 +57,7 @@ def dashboard(request):
         'category': category,
         'a': a,
         'total_owners': total_owners,
+        'role_name': role_name,
      }
     return render(request, 'index.html',context)
 
@@ -53,6 +66,18 @@ from django.db.models import Q
 # manage asset view
 @login_required
 def manageasset(request):
+    user = request.user
+    role_name = None
+
+    if user.is_superuser:
+        role_name = 'Admin'
+    elif user.is_staff and not user.groups.exists():
+        role_name = 'Staff'
+    elif user.groups.filter(name='state_user').exists():
+        role_name = 'Estate'
+    elif user.groups.filter(name='ict_user').exists():
+        role_name = 'ICT'
+
     search_term = request.GET.get('search_term')
     # assets = Asset.objects.order_by('-item_creation_date')
     assets = Asset.objects.filter(is_active=True).order_by('-item_creation_date')
@@ -92,6 +117,7 @@ def manageasset(request):
         'category': AssetCategory.objects.all(),
         'page_range': page_range,
         'search_term': search_term,
+        'role_name' : role_name,
     }
 
     return render(request, 'tables.html', context)
@@ -100,6 +126,18 @@ def manageasset(request):
 # category view with pagination
 @login_required
 def category(request):
+    user = request.user
+    role_name = None
+
+    if user.is_superuser:
+        role_name = 'Admin'
+    elif user.is_staff and not user.groups.exists():
+        role_name = 'Staff'
+    elif user.groups.filter(name='state_user').exists():
+        role_name = 'Estate'
+    elif user.groups.filter(name='ict_user').exists():
+        role_name = 'ICT'
+
     category = AssetCategory.objects.all()
     categories_list = AssetCategory.objects.order_by('-item_creation_date')
     paginator = Paginator(categories_list, 10) # Show 10 categories per page
@@ -117,6 +155,7 @@ def category(request):
     context = {
         'categories': categories,
         'category':category,
+        'role_name' : role_name,
     }
     return render(request, 'category.html', context)
 
@@ -164,6 +203,18 @@ def edit_category(request):
 # same category asset table view
 @login_required
 def category_table(request, category_id):
+    user = request.user
+    role_name = None
+
+    if user.is_superuser:
+        role_name = 'Admin'
+    elif user.is_staff and not user.groups.exists():
+        role_name = 'Staff'
+    elif user.groups.filter(name='state_user').exists():
+        role_name = 'Estate'
+    elif user.groups.filter(name='ict_user').exists():
+        role_name = 'ICT'
+
     category = AssetCategory.objects.get(id=category_id)
     asset_list = Asset.objects.filter(category=category, is_active=True)  # Filter for active assets
 
@@ -197,6 +248,7 @@ def category_table(request, category_id):
         'assets': assets,
         'category_name': category_name,
         'page_range': page_range,
+        'role_name': role_name,
     }
 
     return render(request, 'category_table.html', context)
@@ -251,24 +303,29 @@ def report(request):
 
     show_reports = False
     hide_action_column = False  # Flag to determine if the action column should be hidden
+    role_name = None
 
     if user.is_superuser and user.is_staff:
         # Show all reports for superadmin and staff users
         report_list = Report.objects.order_by('item_creation_date').all()
         show_reports = True
+        role_name = 'Admin'
     elif user.is_staff and not user.groups.exists():
         # Show all reports for staff users who are not in any group
         report_list = Report.objects.order_by('item_creation_date').all()
         show_reports = True
         hide_action_column = True  # Hide the action column for these users
+        role_name = 'Staff'
     elif user.groups.filter(name='state_user').exists():
         # Show only estate service reports for staff users in state_user group
         report_list = Report.objects.filter(service_type='estate').order_by('item_creation_date').all()
         show_reports = True
+        role_name = 'Estate'
     elif user.groups.filter(name='ict_user').exists():
         # Show only ICT service reports for staff users in ict_user group
         report_list = Report.objects.filter(service_type='ict').order_by('item_creation_date').all()
         show_reports = True
+        role_name = 'ICT'
     else:
         # For other users, show no reports
         report_list = Report.objects.none()
@@ -307,9 +364,78 @@ def report(request):
         'next_page': next_page,
         'show_reports': show_reports,
         'hide_action_column': hide_action_column,  # Pass the flag to the template
+        'user': user,
+        'role_name': role_name,  # Pass the role name to the template
     }
 
     return render(request, 'report.html', context)
+
+# def report(request):
+#     category = AssetCategory.objects.all()
+#     user = request.user
+
+#     show_reports = False
+#     hide_action_column = False  # Flag to determine if the action column should be hidden
+
+#     if user.is_superuser and user.is_staff:
+#         # Show all reports for superadmin and staff users
+#         report_list = Report.objects.order_by('item_creation_date').all()
+#         show_reports = True
+#     elif user.is_staff and not user.groups.exists():
+#         # Show all reports for staff users who are not in any group
+#         report_list = Report.objects.order_by('item_creation_date').all()
+#         show_reports = True
+#         hide_action_column = True  # Hide the action column for these users
+#     elif user.groups.filter(name='state_user').exists():
+#         # Show only estate service reports for staff users in state_user group
+#         report_list = Report.objects.filter(service_type='estate').order_by('item_creation_date').all()
+#         show_reports = True
+#     elif user.groups.filter(name='ict_user').exists():
+#         # Show only ICT service reports for staff users in ict_user group
+#         report_list = Report.objects.filter(service_type='ict').order_by('item_creation_date').all()
+#         show_reports = True
+#     else:
+#         # For other users, show no reports
+#         report_list = Report.objects.none()
+
+#     # Handle search functionality
+#     search_term = request.GET.get('search_term')
+#     if search_term:
+#         report_list = report_list.filter(asset__asset_id__icontains=search_term)
+
+#     paginator = Paginator(report_list, 10)  # Show 10 reports per page
+#     page = request.GET.get('page')
+#     reports = paginator.get_page(page)
+
+#     # Calculate the range of pages to display
+#     num_pages = paginator.num_pages
+#     current_page = reports.number
+
+#     if num_pages <= 5:
+#         page_range = range(1, num_pages + 1)
+#     elif current_page <= 3:
+#         page_range = range(1, 6)
+#     elif current_page >= num_pages - 2:
+#         page_range = range(num_pages - 4, num_pages + 1)
+#     else:
+#         page_range = range(current_page - 2, current_page + 3)
+
+#     prev_page = reports.previous_page_number if reports.has_previous() else None
+#     next_page = reports.next_page_number if reports.has_next() else None
+
+#     context = {
+#         'category': category,
+#         'reports': reports,
+#         'search_term': search_term,
+#         'page_range': page_range,
+#         'prev_page': prev_page,
+#         'next_page': next_page,
+#         'show_reports': show_reports,
+#         'hide_action_column': hide_action_column,  # Pass the flag to the template
+#         'user' : user, 
+#     }
+
+#     return render(request, 'report.html', context)
 
 # @login_required
 # def report(request):
@@ -414,9 +540,21 @@ def logout_view(request):
 # password change
 @login_required
 def profile(request):
+    user = request.user
+    role_name = None
+
+    if user.is_superuser:
+        role_name = 'Admin'
+    elif user.is_staff and not user.groups.exists():
+        role_name = 'Staff'
+    elif user.groups.filter(name='state_user').exists():
+        role_name = 'Estate'
+    elif user.groups.filter(name='ict_user').exists():
+        role_name = 'ICT'
+
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
-        if form.is_valid() and (request.user.is_staff or request.user.is_superuser):
+        if form.is_valid() and (user.is_staff or user.is_superuser):
             user = form.save()
             update_session_auth_hash(request, user)  # Important!
             messages.success(request, 'Your password was successfully updated!')
@@ -429,18 +567,60 @@ def profile(request):
     else:
         form = PasswordChangeForm(request.user)
     
-    if request.user.is_staff or request.user.is_superuser:
+    if user.is_staff or user.is_superuser:
         category = AssetCategory.objects.all()
-        return render(request, 'profile.html', {'form': form, 'category': category})
+        context = {
+            'form': form,
+            'category': category,
+            'role_name': role_name,
+            'user' : user,
+        }
+        return render(request, 'profile.html', context)
     else:
         messages.error(request, 'You do not have permission to access this page.')
         return redirect(reverse('backend:profile'))
+# def profile(request):
+#     user = request.user
+#     if request.method == 'POST':
+#         form = PasswordChangeForm(request.user, request.POST)
+#         if form.is_valid() and (request.user.is_staff or request.user.is_superuser):
+#             user = form.save()
+#             update_session_auth_hash(request, user)  # Important!
+#             messages.success(request, 'Your password was successfully updated!')
+#             return redirect(reverse('backend:profile'))
+#         else:
+#             for field, errors in form.errors.items():
+#                 for error in errors:
+#                     messages.error(request, f"{field.capitalize()}: {error}")
+#             messages.error(request, 'Please correct the errors below.')
+#     else:
+#         form = PasswordChangeForm(request.user)
+    
+#     if request.user.is_staff or request.user.is_superuser:
+#         category = AssetCategory.objects.all()
+#         return render(request, 'profile.html', {'form': form, 'category': category})
+#     else:
+#         messages.error(request, 'You do not have permission to access this page.')
+#         return redirect(reverse('backend:profile'))
 
 # username and email change
+
+
 @login_required
 def update_admin_profile(request):
+    user = request.user
+    role_name = None
+
+    if user.is_superuser:
+        role_name = 'Admin'
+    elif user.is_staff and not user.groups.exists():
+        role_name = 'Staff'
+    elif user.groups.filter(name='state_user').exists():
+        role_name = 'Estate'
+    elif user.groups.filter(name='ict_user').exists():
+        role_name = 'ICT'
+
     if request.method == 'POST':
-        user = request.user
         if user.is_staff or user.is_superuser:
             old_username = user.username
             old_email = user.email
@@ -455,7 +635,31 @@ def update_admin_profile(request):
                 messages.success(request, 'Email has been changed successfully.')
 
             return redirect(reverse('backend:profile'))
-    return render(request, 'profile.html')
+    
+    context = {
+        'user': user,
+        'role_name': role_name,
+    }
+    return render(request, 'profile.html', context)
+# def update_admin_profile(request):
+#     if request.method == 'POST':
+#         user = request.user
+#         if user.is_staff or user.is_superuser:
+#             old_username = user.username
+#             old_email = user.email
+
+#             user.username = request.POST.get('username')
+#             user.email = request.POST.get('email')
+#             user.save()
+
+#             if user.username != old_username:
+#                 messages.success(request, 'Username has been changed successfully.')
+#             if user.email != old_email:
+#                 messages.success(request, 'Email has been changed successfully.')
+
+#             return redirect(reverse('backend:profile'))
+    
+#     return render(request, 'profile.html')
 
 
 
@@ -1260,6 +1464,18 @@ from backend.models import Asset
 
 @login_required
 def inactive_assets(request):
+    user = request.user
+    role_name = None
+
+    if user.is_superuser:
+        role_name = 'Admin'
+    elif user.is_staff and not user.groups.exists():
+        role_name = 'Staff'
+    elif user.groups.filter(name='state_user').exists():
+        role_name = 'Estate'
+    elif user.groups.filter(name='ict_user').exists():
+        role_name = 'ICT'
+
     search_term = request.GET.get('search_term')
     inactive_assets = Asset.objects.filter(is_active=False).order_by('-item_creation_date')
 
@@ -1293,6 +1509,7 @@ def inactive_assets(request):
         'page_range': page_range,
         'category': AssetCategory.objects.all(),
         'search_term': search_term,
+        'role_name': role_name,
     }
 
     return render(request, 'inactive.html', context)
@@ -1386,37 +1603,32 @@ def move_report_to_log(request, report_id):
 def report_log(request):
     category = AssetCategory.objects.all()
     user = request.user
+
     show_reports = False
     hide_action_column = False  # Flag to determine if the action column should be hidden
+    role_name = None
 
     if user.is_superuser and user.is_staff:
         # Show all report logs for superadmin and staff users
         report_log_list = ReportLog.objects.order_by('completion_date').all()
         show_reports = True
+        role_name = 'Admin'
     elif user.is_staff and not user.groups.exists():
         # Show all report logs for staff users who are not in any group
         report_log_list = ReportLog.objects.order_by('completion_date').all()
         show_reports = True
         hide_action_column = True  # Hide the action column for these users
-    # elif user.groups.filter(name='state_user').exists():
-    #     # Show only estate service report logs for staff users in state_user group
-    #     report_log_list = ReportLog.objects.order_by('completion_date').all()
-    #     show_reports = True
+        role_name = 'Staff'
     elif user.groups.filter(name='state_user').exists():
-    # Show only estate service report logs for staff users in state_user group
-        report_log_list = ReportLog.objects.filter(service_type='estate')
+        # Show only estate service report logs for staff users in state_user group
+        report_log_list = ReportLog.objects.filter(service_type='estate').order_by('completion_date').all()
         show_reports = True
-
-    # elif user.groups.filter(name='ict_user').exists():
-    #     # Show only ICT service report logs for staff users in ict_user group
-    #     report_log_list = ReportLog.objects.order_by('completion_date').all()
-    #     show_reports = True
-
+        role_name = 'Estate'
     elif user.groups.filter(name='ict_user').exists():
-    # Show only ICT service report logs for staff users in ict_user group
-        report_log_list = ReportLog.objects.filter(service_type='ict')
+        # Show only ICT service report logs for staff users in ict_user group
+        report_log_list = ReportLog.objects.filter(service_type='ict').order_by('completion_date').all()
         show_reports = True
-
+        role_name = 'ICT'
     else:
         # For other users, show no report logs
         report_log_list = ReportLog.objects.none()
@@ -1454,9 +1666,79 @@ def report_log(request):
         'prev_page': prev_page,
         'next_page': next_page,
         'show_reports': show_reports,
-        'hide_action_column': hide_action_column, 
+        'hide_action_column': hide_action_column,
+        'role_name': role_name,
     }
+
     return render(request, 'report_log.html', context)
+
+# def report_log(request):
+#     category = AssetCategory.objects.all()
+#     user = request.user
+#     show_reports = False
+#     hide_action_column = False  # Flag to determine if the action column should be hidden
+
+#     if user.is_superuser and user.is_staff:
+#         # Show all report logs for superadmin and staff users
+#         report_log_list = ReportLog.objects.order_by('completion_date').all()
+#         show_reports = True
+#     elif user.is_staff and not user.groups.exists():
+#         # Show all report logs for staff users who are not in any group
+#         report_log_list = ReportLog.objects.order_by('completion_date').all()
+#         show_reports = True
+#         hide_action_column = True  # Hide the action column for these users
+  
+#     elif user.groups.filter(name='state_user').exists():
+#     # Show only estate service report logs for staff users in state_user group
+#         report_log_list = ReportLog.objects.filter(service_type='estate')
+#         show_reports = True
+
+    
+#     elif user.groups.filter(name='ict_user').exists():
+#     # Show only ICT service report logs for staff users in ict_user group
+#         report_log_list = ReportLog.objects.filter(service_type='ict')
+#         show_reports = True
+
+#     else:
+#         # For other users, show no report logs
+#         report_log_list = ReportLog.objects.none()
+
+#     # Handle search functionality
+#     search_term = request.GET.get('search_term')
+#     if search_term:
+#         report_log_list = report_log_list.filter(asset__asset_id__icontains=search_term)
+
+#     paginator = Paginator(report_log_list, 10)  # Show 10 report logs per page
+#     page = request.GET.get('page')
+#     report_logs = paginator.get_page(page)
+
+#     # Calculate the range of pages to display
+#     num_pages = paginator.num_pages
+#     current_page = report_logs.number
+
+#     if num_pages <= 5:
+#         page_range = range(1, num_pages + 1)
+#     elif current_page <= 3:
+#         page_range = range(1, 6)
+#     elif current_page >= num_pages - 2:
+#         page_range = range(num_pages - 4, num_pages + 1)
+#     else:
+#         page_range = range(current_page - 2, current_page + 3)
+
+#     prev_page = report_logs.previous_page_number if report_logs.has_previous() else None
+#     next_page = report_logs.next_page_number if report_logs.has_next() else None
+
+#     context = {
+#         'category': category,
+#         'report_logs': report_logs,
+#         'search_term': search_term,
+#         'page_range': page_range,
+#         'prev_page': prev_page,
+#         'next_page': next_page,
+#         'show_reports': show_reports,
+#         'hide_action_column': hide_action_column, 
+#     }
+#     return render(request, 'report_log.html', context)
 
 
 @login_required

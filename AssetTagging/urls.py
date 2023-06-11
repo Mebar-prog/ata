@@ -9,7 +9,7 @@ from django.conf.urls.static import static
 from django.urls import path, include
 
 urlpatterns = [
-    # path('dj-admin/', admin.site.urls),
+    path('dj-admin/', admin.site.urls),
     path('', include('frontend.urls', namespace='frontend')),
     path('admin/', include('backend.urls', namespace='backend')),
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),

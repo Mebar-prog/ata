@@ -151,8 +151,11 @@
   <aside class="aside is-placed-left is-expanded">
     <div class="aside-tools">
       <img src="{% static 'backend/img/ata_logo.png' %}" class="rounded-full" style="width:45px; margin-right:5px;">
-      <div>
+      <!-- <div>
         Admin <b class="font-black">ATA</b>
+      </div> -->
+      <div>
+        {{ role_name }} <b class="font-black">ATA</b>
       </div>
     </div>
     <div class="menu is-menu-main">
