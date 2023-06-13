@@ -120,7 +120,7 @@ LOGIN_URL = "frontend:admin_login"
 #         'ENGINE': 'django.db.backends.postgresql',
 #         'NAME': 'ata',
 #         'USER': 'postgres',
-#         'PASSWORD': 'pangbisa123',
+#         'PASSWORD': '',
 #         'HOST': 'localhost',
 #         'PORT': '',
 #     }
@@ -189,17 +189,6 @@ CLOUDINARY_STORAGE = {
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
-# CLOUDINARY_STORAGE = {
-#     'CLOUD_NAME': 'daec0esmt',
-#     'API_KEY': '286856359452878',
-#     'API_SECRET': 'XmiZTq8-3p-Yp7mD6t-W1ZOzOBo'
-# }
-
-# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-    
-
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -208,10 +197,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "sherabwang111@gmail.com"
-EMAIL_HOST_PASSWORD = "apmbzpkyvmjztvni"
+EMAIL_HOST_USER = "assettaggingapplication@gmail.com"
+EMAIL_HOST_PASSWORD = "midqmzdaseanzbau"
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = "sherabwang111@gmail.com"
+DEFAULT_FROM_EMAIL = "assettaggingapplication@gmail.com"
 
 
 
